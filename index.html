@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kings Fiber Connection - Complete Service Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .popular-plan {
+            position: relative;
+            border: 2px solid #7c3aed;
+        }
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #7c3aed;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .unique-feature {
+            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-panel, .admin-panel {
+            display: none;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px auto;
+            max-width: 500px;
+        }
+        .user-list {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .booking-details {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-wifi text-purple-600 text-2xl"></i>
+                    <span class="text-2xl font-bold text-gray-900">Kings Fiber Connection</span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#internet" class="text-gray-700 hover:text-purple-600 transition-colors">Internet</a>
+                    <a href="#cctv" class="text-gray-700 hover:text-purple-600 transition-colors">CCTV</a>
+                    <a href="#electrical" class="text-gray-700 hover:text-purple-600 transition-colors">Electrical</a>
+                    <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors">Contact</a>
+                </nav>
+                <button onclick="showLoginPanel()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    Login
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-5xl font-bold mb-6 leading-tight">
+                        Complete Service Solutions
+                    </h1>
+                    <p class="text-xl mb-8 text-purple-100">
+                        Kings Fiber Connection provides Internet, CCTV, Electrical services and more across Kiambu and Nairobi. 
+                        Professional installation and maintenance for ISPs, gamers, offices, and homes.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            View All Services
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                            Call Now: 0113898413
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30">
+                        <div class="flex justify-center mb-6">
+                            <i class="fas fa-wifi text-white text-3xl mr-4"></i>
+                            <i class="fas fa-video text-red-300 text-3xl mr-4"></i>
+                            <i class="fas fa-bolt text-yellow-300 text-3xl"></i>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold">Kiambu</div>
+                                <div class="text-sm">Full Service</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">Nairobi</div>
+                                <div class="text-sm">Full Service</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">Thika</div>
+                                <div class="text-sm">Headquarters</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">24/7</div>
+                                <div class="text-sm">Support</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Unique Feature Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="unique-feature">
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-bold mb-4">🌟 Integrated Smart Security System</h2>
+                    <p class="text-lg mb-6">Our exclusive integrated system combines high-speed fiber internet with advanced CCTV surveillance and smart electrical controls. Monitor your property remotely, receive real-time alerts, and control lighting/power systems all from one intuitive mobile app.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <span class="bg-white/20 px-3 py-1 rounded-full">Remote Monitoring</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full">AI Motion Detection</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full">Cloud Storage</span>
+                        <span class="bg-white/20 px-3 py-1 rounded-full">Smart Power Control</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Internet Services Section -->
+    <section id="internet" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Internet Installation Services</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl">
+                        Professional fiber internet installation for ISPs, gamers, offices, and residential customers
+                    </p>
+                </div>
+                <button onclick="showAdminPanel()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
+                    <i class="fas fa-cog mr-2"></i>Admin
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- ISP Package -->
+                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card">
+                    <i class="fas fa-network-wired text-purple-600 text-2xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">ISP Solutions</h3>
+                    <div class="text-3xl font-bold text-purple-600 mb-4">10 Gbps</div>
+                    <div class="text-2xl font-bold mb-6">Custom Pricing</div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Dedicated Infrastructure</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Redundant Connections</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">SLA Guaranteed</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">24/7 Monitoring</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" onclick="openBookingModal('ISP Solutions')">
+                        Book Installation
+                    </button>
+                </div>
+
+                <!-- Gamer Package -->
+                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card popular-plan">
+                    <div class="popular-badge">GAMER SPECIAL</div>
+                    <i class="fas fa-gamepad text-purple-600 text-2xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Gamer Pro</h3>
+                    <div class="text-3xl font-bold text-purple-600 mb-4">1 Gbps</div>
+                    <div class="text-2xl font-bold mb-6">Ksh 5,000/month</div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Ultra Low Latency</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Gaming Router</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">DDoS Protection</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Priority Support</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors" onclick="openBookingModal('Gamer Pro')">
+                        Book Installation
+                    </button>
+                </div>
+
+                <!-- Office Package -->
+                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card">
+                    <i class="fas fa-building text-purple-600 text-2xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Office Business</h3>
+                    <div class="text-3xl font-bold text-purple-600 mb-4">500 Mbps</div>
+                    <div class="text-2xl font-bold mb-6">Ksh 7,500/month</div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Multiple Static IPs</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">VoIP Ready</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Cloud Integration</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Backup Connection</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" onclick="openBookingModal('Office Business')">
+                        Book Installation
+                    </button>
+                </div>
+
+                <!-- Home Package -->
+                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card">
+                    <i class="fas fa-home text-purple-600 text-2xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Home Premium</h3>
+                    <div class="text-3xl font-bold text-purple-600 mb-4">200 Mbps</div>
+                    <div class="text-2xl font-bold mb-6">Ksh 3,500/month</div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Unlimited Data</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Wi-Fi 6 Router</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Smart Home Ready</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Free Installation</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" onclick="openBookingModal('Home Premium')">
+                        Book Installation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CCTV Services Section -->
+    <section id="cctv" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">CCTV Installation & Maintenance</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl">
+                        Professional CCTV security systems for homes, businesses, and commercial properties
+                    </p>
+                </div>
+                <button onclick="showAdminPanel()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
+                    <i class="fas fa-cog mr-2"></i>Admin
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Basic CCTV -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
+                    <i class="fas fa-video text-red-500 text-2xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Basic Home Security</h3>
+                    <div class="text-2xl font-bold text-red-600 mb-4">Ksh 15,000</div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">4 HD Cameras</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">1TB DVR</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Night Vision</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Mobile App Access</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">1 Year Warranty</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors" onclick="openBookingModal('Basic Home Security')">
+                        Book Installation
+                    </button>
+                </div>
+
+                <!-- Business CCTV -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
+                    <i class="fas fa-building text-red-500 text-2xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Business Security Pro</h3>
+                    <div class="text-2xl font-bold text-red-600 mb-4">Ksh 35,000</div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">8 Full HD Cameras</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">2TB NVR</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">AI Motion Detection</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Cloud Backup</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Remote Monitoring</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">2 Year Warranty</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors" onclick="openBookingModal('Business Security Pro')">
+                        Book Installation
+                    </button>
+                </div>
+
+                <!-- Enterprise CCTV -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
+                    <i class="fas fa-industry text-red-500 text-2xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Enterprise Security</h3>
+                    <div class="text-2xl font-bold text-red-600 mb-4">Ksh 75,000+</div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">16+ 4K Cameras</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">RAID Storage System</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Facial Recognition</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">License Plate Recognition</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">24/7 Monitoring Center</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Custom Integration</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors" onclick="openBookingModal('Enterprise Security')">
+                        Book Installation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Electrical Services Section -->
+    <section id="electrical" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Electrical Services & Installation</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl">
+                        Professional electrical installation, maintenance, and emergency services for all property types
+                    </p>
+                </div>
+                <button onclick="showAdminPanel()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
+                    <i class="fas fa-cog mr-2"></i>Admin
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Residential -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
+                    <i class="fas fa-home text-yellow-500 text-2xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Residential Electrical</h3>
+                    <p class="text-gray-600 mb-6">Complete electrical solutions for homes with certified technicians and quality materials</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">New electrical installations</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Lighting fixture installation</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Power outlet upgrades</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Electrical panel upgrades</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Generator installation</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Smart home electrical setup</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Emergency electrical repairs</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Commercial -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
+                    <i class="fas fa-building text-yellow-500 text-2xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Commercial Electrical</h3>
+                    <p class="text-gray-600 mb-6">Professional electrical services for businesses, offices, and commercial properties</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Commercial electrical installations</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Office lighting systems</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Industrial power distribution</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">UPS and backup power systems</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Electrical safety inspections</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">Energy efficiency audits</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
+                            <span class="text-gray-700">24/7 emergency response</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Electrical Packages -->
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold text-gray-900 mb-4">Electrical Service Packages</h3>
+                <p class="text-lg text-gray-600">Affordable bundled packages for common electrical needs</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Basic Home Setup -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow service-card">
+                    <i class="fas fa-lightbulb text-yellow-500 text-2xl mb-4"></i>
+                    <h4 class="text-xl font-bold text-gray-900 mb-3">Basic Home Setup</h4>
+                    <div class="text-2xl font-bold text-yellow-600 mb-4">Ksh 8,000</div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">5 Power outlets</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">3 Light fixtures</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Basic wiring</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Safety inspection</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">30-day warranty</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg font-semibold hover:bg-yellow-600 transition-colors" onclick="openBookingModal('Basic Home Setup')">
+                        Book Service
+                    </button>
+                </div>
+
+                <!-- Complete Home Wiring -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow service-card">
+                    <i class="fas fa-lightbulb text-yellow-500 text-2xl mb-4"></i>
+                    <h4 class="text-xl font-bold text-gray-900 mb-3">Complete Home Wiring</h4>
+                    <div class="text-2xl font-bold text-yellow-600 mb-4">Ksh 25,000</div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Full house wiring</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">15+ outlets</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">10+ light points</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">DB board installation</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Certificate of compliance</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">6-month warranty</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg font-semibold hover:bg-yellow-600 transition-colors" onclick="openBookingModal('Complete Home Wiring')">
+                        Book Service
+                    </button>
+                </div>
+
+                <!-- Office Electrical Package -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow service-card">
+                    <i class="fas fa-lightbulb text-yellow-500 text-2xl mb-4"></i>
+                    <h4 class="text-xl font-bold text-gray-900 mb-3">Office Electrical Package</h4>
+                    <div class="text-2xl font-bold text-yellow-600 mb-4">Ksh 45,000</div>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Commercial-grade wiring</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">25+ power points</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">LED lighting system</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Emergency lighting</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Fire alarm integration</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">1-year warranty</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="text-gray-700">Free consultation</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg font-semibold hover:bg-yellow-600 transition-colors" onclick="openBookingModal('Office Electrical Package')">
+                        Book Service
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coverage Section -->
+    <section id="coverage" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Service Coverage Areas</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    We provide comprehensive services across Central Kenya
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-8 rounded-xl">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Primary Coverage Areas</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-green-100 p-2 rounded-full mt-1">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Nairobi</h4>
+                                <p class="text-gray-600">Full coverage for all services across all suburbs and business districts</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-green-100 p-2 rounded-full mt-1">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Kiambu County</h4>
+                                <p class="text-gray-600">Complete service including Kiambu Town, Kikuyu, Limuru, Ruiru, Thika, and surrounding areas</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-blue-100 p-2 rounded-full mt-1">
+                                <i class="fas fa-globe text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Expanding Soon</h4>
+                                <p class="text-gray-600">Murang'a and Machakos counties coming in Q2 2026</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Why Choose Kings Fiber Connection?</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-purple-100 p-2 rounded-full mt-1">
+                                <i class="fas fa-tools text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Complete Solutions</h4>
+                                <p class="text-gray-600">One company for internet, CCTV, and electrical services</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-red-100 p-2 rounded-full mt-1">
+                                <i class="fas fa-video text-red-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Integrated Security</h4>
+                                <p class="text-gray-600">CCTV systems that integrate with your internet and electrical systems</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-green-100 p-2 rounded-full mt-1">
+                                <i class="fas fa-shield-alt text-green-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Quality Assurance</h4>
+                                <p class="text-gray-600">All work comes with warranties and compliance certificates</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Get Complete Solutions Today</h2>
+                <p class="text-xl text-purple-100 max-w-3xl mx-auto">
+                    Contact us for any of our services! Serving Kiambu and Nairobi areas.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+                    <i class="fas fa-phone text-2xl mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Call Us</h3>
+                    <p class="text-purple-100 text-lg">0113 898 413</p>
+                    <p class="text-purple-100 text-lg">0717 005 857</p>
+                    <p class="text-purple-100 mt-2">Available 8AM - 8PM Daily</p>
+                    <p class="text-purple-100">24/7 Emergency Services</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+                    <i class="fas fa-envelope text-2xl mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Email Us</h3>
+                    <p class="text-purple-100">info@kingsfiber.co.ke</p>
+                    <p class="text-purple-100">support@kingsfiber.co.ke</p>
+                    <p class="text-purple-100">writerjackrey@gmail.com</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+                    <i class="fas fa-map-marker-alt text-2xl mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Location</h3>
+                    <p class="text-purple-100">Thika, Kenya</p>
+                    <p class="text-purple-100">Serving Kiambu & Nairobi</p>
+                    <p class="text-purple-100">On-site consultations available</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                    Schedule Free Consultation
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-wifi text-purple-400 text-xl"></i>
+                        <span class="text-xl font-bold">Kings Fiber Connection</span>
+                    </div>
+                    <p class="text-gray-400">
+                        Complete service provider for internet, CCTV, and electrical solutions in Central Kenya.
+                    </p>
+                    <div class="mt-4">
+                        <p class="text-gray-400">📞 0113 898 413</p>
+                        <p class="text-gray-400">📱 0717 005 857</p>
+                        <p class="text-gray-400">📍 Thika, Kenya</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Internet Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#internet" class="hover:text-white transition-colors">ISP Solutions</a></li>
+                        <li><a href="#internet" class="hover:text-white transition-colors">Gamer Internet</a></li>
+                        <li><a href="#internet" class="hover:text-white transition-colors">Office Internet</a></li>
+                        <li><a href="#internet" class="hover:text-white transition-colors">Home Internet</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Security Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#cctv" class="hover:text-white transition-colors">Home CCTV</a></li>
+                        <li><a href="#cctv" class="hover:text-white transition-colors">Business CCTV</a></li>
+                        <li><a href="#cctv" class="hover:text-white transition-colors">Enterprise Security</a></li>
+                        <li><a href="#cctv" class="hover:text-white transition-colors">Maintenance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Electrical Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#electrical" class="hover:text-white transition-colors">Residential</a></li>
+                        <li><a href="#electrical" class="hover:text-white transition-colors">Commercial</a></li>
+                        <li><a href="#contact" class="hover:text-white transition-colors">Emergency Repairs</a></li>
+                        <li><a href="#electrical" class="hover:text-white transition-colors">Maintenance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2026 Kings Fiber Connection. All rights reserved. | Licensed Contractor | Thika, Kenya</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Panel -->
+    <div id="loginPanel" class="login-panel">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">User Login</h3>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" id="loginUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter username">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="loginPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter password">
+            </div>
+            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">Login</button>
+            <button type="button" onclick="toggleLoginPanel()" class="w-full mt-2 text-gray-600">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Admin Login</h3>
+        <form id="adminLoginForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="adminEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="writerjackrey@gmail.com">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" id="adminUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="ADMIN">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="adminPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="danpe">
+            </div>
+            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">Admin Login</button>
+            <button type="button" onclick="toggleAdminPanel()" class="w-full mt-2 text-gray-600">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-panel" style="display:none;">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-800">Admin Dashboard</h3>
+            <button onclick="logoutAdmin()" class="text-red-600 text-sm">Logout</button>
+        </div>
+        
+        <h4 class="font-bold mb-2">Create New User Account</h4>
+        <form id="createUserForm" class="space-y-3 mb-4">
+            <input type="text" id="newUsername" placeholder="Username" class="w-full px-2 py-1 border rounded text-sm">
+            <input type="password" id="newPassword" placeholder="Password" class="w-full px-2 py-1 border rounded text-sm">
+            <select id="userRole" class="w-full px-2 py-1 border rounded text-sm">
+                <option value="customer">Customer</option>
+                <option value="technician">Technician</option>
+                <option value="support">Support Staff</option>
+            </select>
+            <button type="submit" class="w-full bg-green-600 text-white text-sm py-1 rounded">Create User</button>
+        </form>
+
+        <h4 class="font-bold mb-2">Manage Users</h4>
+        <div id="userList" class="user-list">
+            <p class="text-gray-500 text-sm">No users created yet.</p>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-4">Book Your Service</h2>
+            <form id="bookingForm">
+                <input type="hidden" id="serviceType" name="serviceType">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="location">Location/Area</label>
+                    <input type="text" id="location" name="location" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="e.g., Westlands, Nairobi">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="message">Additional Details</label>
+                    <textarea id="message" name="message" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Any specific requirements or questions?"></textarea>
+                </div>
+                <div class="flex justify-between">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Submit Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal with Contact Info -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="text-green-500 text-4xl mb-4">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-4">Booking Successful!</h2>
+            <p class="text-gray-700 mb-6">Thank you for booking with Kings Fiber Connection. Your details have been forwarded to our team.</p>
+            
+            <div class="booking-details">
+                <h3 class="font-bold mb-2">Your Booking Details:</h3>
+                <p><strong>Service:</strong> <span id="bookingService"></span></p>
+                <p><strong>Name:</strong> <span id="bookingName"></span></p>
+                <p><strong>Phone:</strong> <span id="bookingPhone"></span></p>
+                <p><strong>Email:</strong> <span id="bookingEmail"></span></p>
+                <p><strong>Location:</strong> <span id="bookingLocation"></span></p>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg mt-6">
+                <h3 class="font-bold text-lg mb-2">Contact Us Directly:</h3>
+                <p class="mb-1"><i class="fas fa-phone mr-2"></i> <strong>0113 898 413</strong></p>
+                <p class="mb-1"><i class="fas fa-mobile-alt mr-2"></i> <strong>0717 005 857</strong></p>
+                <p class="mb-1"><i class="fas fa-envelope mr-2"></i> <strong>writerjackrey@gmail.com</strong></p>
+                <p><i class="fas fa-map-marker-alt mr-2"></i> Thika, Kenya</p>
+            </div>
+            
+            <button onclick="closeSuccessModal()" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 mt-4">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulated user database
+        let users = [];
+        let isAdminLoggedIn = false;
+
+        // DOM Elements
+        const loginPanel = document.getElementById('loginPanel');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminDashboard = document.getElementById('adminDashboard');
+
+        // Show login panel
+        function showLoginPanel() {
+            loginPanel.style.display = 'block';
+        }
+
+        function toggleLoginPanel() {
+            loginPanel.style.display = 'none';
+        }
+
+        function toggleAdminPanel() {
+            adminPanel.style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+
+        function openBookingModal(service) {
+            document.getElementById('serviceType').value = service;
+            document.getElementById('bookingModal').style.display = 'block';
+        }
+
+        // User login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                alert(`Welcome back, ${user.username}! Role: ${user.role}`);
+                loginPanel.style.display = 'none';
+            } else {
+                alert('Invalid username or password. Only accounts created by admin can login.');
+            }
+        });
+
+        // Admin login
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (email === 'writerjackrey@gmail.com' && username === 'ADMIN' && password === 'danpe') {
+                isAdminLoggedIn = true;
+                adminPanel.style.display = 'none';
+                adminDashboard.style.display = 'block';
+                renderUserList();
+            } else {
+                alert('Invalid admin credentials. Only writerjackrey@gmail.com can access admin panel.');
+            }
+        });
+
+        // Create new user (admin only)
+        document.getElementById('createUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('userRole').value;
+
+            if (!username || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (users.some(u => u.username === username)) {
+                alert('Username already exists');
+                return;
+            }
+
+            users.push({ username, password, role });
+            alert(`User "${username}" created successfully with role: ${role}`);
+            renderUserList();
+            
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+        });
+
+        function renderUserList() {
+            const userList = document.getElementById('userList');
+            if (users.length === 0) {
+                userList.innerHTML = '<p class="text-gray-500 text-sm">No users created yet.</p>';
+                return;
+            }
+
+            let html = '<div class="space-y-2">';
+            users.forEach((user, index) => {
+                html += `
+                    <div class="flex justify-between items-center bg-white p-2 rounded text-sm">
+                        <span>${user.username} (${user.role})</span>
+                        <button onclick="deleteUser(${index})" class="text-red-500 text-xs">Delete</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            userList.innerHTML = html;
+        }
+
+        function deleteUser(index) {
+            users.splice(index, 1);
+            renderUserList();
+            alert('User deleted successfully');
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            adminDashboard.style.display = 'none';
+        }
+
+        // Booking form submit - now captures and displays all contact info
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const service = document.getElementById('serviceType').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const location = document.getElementById('location').value;
+            
+            // Display in success modal
+            document.getElementById('bookingService').textContent = service;
+            document.getElementById('bookingName').textContent = name;
+            document.getElementById('bookingPhone').textContent = phone;
+            document.getElementById('bookingEmail').textContent = email;
+            document.getElementById('bookingLocation').textContent = location;
+            
+            // Close booking modal and show success
+            document.getElementById('bookingModal').style.display = 'none';
+            document.getElementById('successModal').style.display = 'block';
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+            if (event.target === loginPanel) {
+                loginPanel.style.display = 'none';
+            }
+            if (event.target === adminPanel) {
+                adminPanel.style.display = 'none';
+            }
+            if (event.target === adminDashboard) {
+                adminDashboard.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
+
