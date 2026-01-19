@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kings Fiber Connection - Complete Digital Platform</title>
+    <title>Kings Fiber Connection - Complete Service Solutions</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,13 +14,17 @@
             theme: {
                 extend: {
                     colors: {
-                        purple: {
+                        primary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
                             600: '#7c3aed',
                             700: '#6d28d9',
-                        },
-                        teal: {
-                            500: '#14b8a6',
-                            600: '#0d9488',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
                         }
                     }
                 }
@@ -28,21 +32,25 @@
         }
     </script>
     <style>
-        :root {
-            --primary-color: #7c3aed;
-            --secondary-color: #0d9488;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-        }
-        .card-hover {
+        .service-card {
             transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
         }
-        .card-hover:hover {
+        .service-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        .modal-overlay {
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -51,1657 +59,1100 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
-        .dashboard-card {
+        .modal-content {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .floating {
+            animation: float 6s ease-in-out infinite;
         }
-        .status-active { background: #10b981; color: white; }
-        .status-pending { background: #f59e0b; color: white; }
-        .status-expired { background: #ef4444; color: white; }
-        .tab-active {
-            border-bottom: 3px solid #7c3aed;
-            color: #7c3aed;
-            font-weight: 600;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
-        .sidebar-link {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin: 4px 0;
-            transition: all 0.3s;
+        .investor-tier {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
         }
-        .sidebar-link:hover {
-            background: rgba(124, 58, 237, 0.1);
-            color: #7c3aed;
+        .investor-tier:hover {
+            border-color: #7c3aed;
+            transform: translateY(-5px);
         }
-        .sidebar-link.active {
-            background: rgba(124, 58, 237, 0.1);
-            color: #7c3aed;
-            border-left: 4px solid #7c3aed;
+        .cart-pulse {
+            animation: pulse 2s infinite;
         }
-        .notification-dot {
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            position: absolute;
-            top: 8px;
-            right: 8px;
-        }
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #7c3aed;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal-overlay">
-        <div class="flex items-center justify-center min-h-screen">
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
-                <div class="p-8">
-                    <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-full mb-4">
-                            <i class="fas fa-crown text-white text-2xl"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
-                        <p class="text-gray-600">Sign in to your account</p>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-primary-600 p-3 rounded-xl">
+                        <i class="fas fa-crown text-white text-2xl"></i>
                     </div>
-                    
-                    <form id="loginForm" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" id="loginEmail" required 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" id="loginPassword" required 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
-                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                            </label>
-                            <a href="#" class="text-sm text-purple-600 hover:text-purple-700">Forgot password?</a>
-                        </div>
-                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
-                            Sign In
-                        </button>
-                    </form>
-                    
-                    <div class="mt-6 text-center">
-                        <p class="text-gray-600">Don't have an account? <a href="#" onclick="showSignup()" class="text-purple-600 hover:text-purple-700 font-semibold">Sign up</a></p>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Kings Fiber</h1>
+                        <p class="text-sm text-gray-600">Complete Digital Solutions</p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Signup Modal -->
-    <div id="signupModal" class="modal-overlay hidden">
-        <div class="flex items-center justify-center min-h-screen">
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
-                <div class="p-8">
-                    <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-full mb-4">
-                            <i class="fas fa-user-plus text-white text-2xl"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Create Account</h2>
-                        <p class="text-gray-600">Join Kings Fiber Connection</p>
-                    </div>
-                    
-                    <form id="signupForm" class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <input type="text" id="firstName" required 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <input type="text" id="lastName" required 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" id="signupEmail" required 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" id="phone" required 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" id="signupPassword" required 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                            <input type="password" id="confirmPassword" required 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="terms" required 
-                                   class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
-                            <label for="terms" class="ml-2 text-sm text-gray-600">
-                                I agree to the <a href="#" class="text-purple-600 hover:text-purple-700">Terms & Conditions</a>
-                            </label>
-                        </div>
-                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700">
-                            Create Account
-                        </button>
-                    </form>
-                    
-                    <div class="mt-6 text-center">
-                        <p class="text-gray-600">Already have an account? <a href="#" onclick="showLogin()" class="text-purple-600 hover:text-purple-700 font-semibold">Sign in</a></p>
-                    </div>
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-primary-600 font-medium">Home</a>
+                    <a href="#services" class="text-gray-700 hover:text-primary-600 font-medium">Services</a>
+                    <a href="#shop" class="text-gray-700 hover:text-primary-600 font-medium">Shop</a>
+                    <a href="#investors" class="text-gray-700 hover:text-primary-600 font-medium">Investors</a>
+                    <a href="#contact" class="text-gray-700 hover:text-primary-600 font-medium">Contact</a>
+                    <button onclick="showLoginModal()" class="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700">
+                        <i class="fas fa-user mr-2"></i>Internet Login
+                    </button>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Main App Container -->
-    <div id="appContainer" class="hidden">
-        <!-- Top Navigation -->
-        <nav class="bg-white shadow-sm border-b">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <!-- Left side: Logo and menu -->
-                    <div class="flex items-center">
-                        <button onclick="toggleSidebar()" class="p-2 rounded-md text-gray-700 hover:bg-gray-100 lg:hidden">
-                            <i class="fas fa-bars text-lg"></i>
-                        </button>
-                        <div class="flex items-center ml-4">
-                            <div class="bg-purple-600 p-2 rounded-lg">
-                                <i class="fas fa-crown text-white"></i>
-                            </div>
-                            <span class="ml-3 text-xl font-bold text-gray-900">Kings Fiber</span>
-                        </div>
-                    </div>
-
-                    <!-- Right side: User menu -->
-                    <div class="flex items-center space-x-4">
-                        <!-- Notifications -->
-                        <div class="relative">
-                            <button onclick="toggleNotifications()" class="p-2 text-gray-600 hover:text-purple-600 relative">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span id="notificationBadge" class="notification-dot hidden"></span>
-                            </button>
-                            <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border">
-                                <div class="p-4 border-b">
-                                    <h3 class="font-bold text-gray-900">Notifications</h3>
-                                </div>
-                                <div id="notificationList" class="max-h-64 overflow-y-auto">
-                                    <!-- Notifications loaded here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- User profile -->
-                        <div class="relative">
-                            <button onclick="toggleUserMenu()" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-purple-600"></i>
-                                </div>
-                                <div class="hidden md:block text-left">
-                                    <p class="text-sm font-medium" id="userName">Loading...</p>
-                                    <p class="text-xs text-gray-500" id="userRole">Loading...</p>
-                                </div>
-                            </button>
-                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border">
-                                <div class="py-1">
-                                    <a href="#" onclick="showDashboard()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                                    </a>
-                                    <a href="#" onclick="showProfile()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <i class="fas fa-user-circle mr-2"></i>My Profile
-                                    </a>
-                                    <a href="#" onclick="showSettings()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <i class="fas fa-cog mr-2"></i>Settings
-                                    </a>
-                                    <hr class="my-1">
-                                    <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                                        <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Main Layout -->
-        <div class="flex">
-            <!-- Sidebar -->
-            <div id="sidebar" class="sidebar hidden lg:block bg-gray-900 text-white w-64 min-h-[calc(100vh-64px)]">
-                <nav class="p-4 space-y-2">
-                    <div id="adminNav" class="hidden">
-                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-2 px-4">Admin</p>
-                        <a href="#" onclick="showAdminDashboard()" class="sidebar-link flex items-center">
-                            <i class="fas fa-tachometer-alt w-6 mr-3"></i>
-                            <span>Admin Dashboard</span>
-                        </a>
-                        <a href="#" onclick="showUserManagement()" class="sidebar-link flex items-center">
-                            <i class="fas fa-users w-6 mr-3"></i>
-                            <span>User Management</span>
-                        </a>
-                        <a href="#" onclick="showServiceManagement()" class="sidebar-link flex items-center">
-                            <i class="fas fa-cogs w-6 mr-3"></i>
-                            <span>Service Management</span>
-                        </a>
-                        <a href="#" onclick="showBookingManagement()" class="sidebar-link flex items-center">
-                            <i class="fas fa-calendar-check w-6 mr-3"></i>
-                            <span>Booking Management</span>
-                        </a>
-                        <a href="#" onclick="showBillingManagement()" class="sidebar-link flex items-center">
-                            <i class="fas fa-credit-card w-6 mr-3"></i>
-                            <span>Billing Management</span>
-                        </a>
-                    </div>
-                    
-                    <div id="userNav">
-                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-2 px-4">Main</p>
-                        <a href="#" onclick="showDashboard()" class="sidebar-link active flex items-center">
-                            <i class="fas fa-home w-6 mr-3"></i>
-                            <span>Dashboard</span>
-                        </a>
-                        <a href="#" onclick="showMyServices()" class="sidebar-link flex items-center">
-                            <i class="fas fa-wifi w-6 mr-3"></i>
-                            <span>My Services</span>
-                        </a>
-                        <a href="#" onclick="showBilling()" class="sidebar-link flex items-center">
-                            <i class="fas fa-file-invoice-dollar w-6 mr-3"></i>
-                            <span>Billing & Payments</span>
-                        </a>
-                        <a href="#" onclick="showShop()" class="sidebar-link flex items-center">
-                            <i class="fas fa-shopping-cart w-6 mr-3"></i>
-                            <span>Equipment Shop</span>
-                        </a>
-                        <a href="#" onclick="showSupport()" class="sidebar-link flex items-center">
-                            <i class="fas fa-headset w-6 mr-3"></i>
-                            <span>Support</span>
-                        </a>
-                    </div>
-                    
-                    <div class="pt-4 mt-4 border-t border-gray-800">
-                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-2 px-4">Quick Actions</p>
-                        <a href="#" onclick="bookService()" class="sidebar-link flex items-center">
-                            <i class="fas fa-plus-circle w-6 mr-3"></i>
-                            <span>Book Service</span>
-                        </a>
-                        <a href="#" onclick="renewService()" class="sidebar-link flex items-center">
-                            <i class="fas fa-sync-alt w-6 mr-3"></i>
-                            <span>Renew Service</span>
-                        </a>
-                        <a href="#" onclick="reportIssue()" class="sidebar-link flex items-center">
-                            <i class="fas fa-exclamation-triangle w-6 mr-3"></i>
-                            <span>Report Issue</span>
-                        </a>
-                    </div>
-                </nav>
+                <!-- Mobile menu button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
             </div>
 
-            <!-- Main Content -->
-            <div class="flex-1 p-4 lg:p-6">
-                <!-- Loading State -->
-                <div id="loadingState" class="hidden flex items-center justify-center h-64">
-                    <div class="loading-spinner"></div>
-                </div>
-
-                <!-- Admin Dashboard -->
-                <div id="adminDashboard" class="hidden">
-                    <!-- Admin content loaded here -->
-                </div>
-
-                <!-- User Dashboard -->
-                <div id="userDashboard">
-                    <!-- Dashboard content will be loaded here -->
-                </div>
-
-                <!-- Service Management -->
-                <div id="serviceManagement" class="hidden">
-                    <!-- Service management content loaded here -->
-                </div>
-
-                <!-- Shop -->
-                <div id="shopContent" class="hidden">
-                    <!-- Shop content loaded here -->
-                </div>
-
-                <!-- Profile -->
-                <div id="profileContent" class="hidden">
-                    <!-- Profile content loaded here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Landing Page (Visible before login) -->
-    <div id="landingPage">
-        <!-- Header -->
-        <header class="gradient-bg text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-white p-2 rounded-lg">
-                            <i class="fas fa-crown text-purple-600 text-2xl"></i>
-                        </div>
-                        <span class="text-2xl font-bold">Kings Fiber Connection</span>
-                    </div>
-                    <div class="hidden md:flex space-x-8">
-                        <a href="#services" class="hover:text-purple-200 transition-colors">Services</a>
-                        <a href="#shop" class="hover:text-purple-200 transition-colors">Shop</a>
-                        <a href="#about" class="hover:text-purple-200 transition-colors">About</a>
-                        <a href="#contact" class="hover:text-purple-200 transition-colors">Contact</a>
-                    </div>
-                    <button onclick="showLogin()" class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+            <!-- Mobile Navigation -->
+            <div id="mobileMenu" class="md:hidden hidden py-4 border-t">
+                <div class="flex flex-col space-y-4">
+                    <a href="#home" class="text-gray-700 hover:text-primary-600">Home</a>
+                    <a href="#services" class="text-gray-700 hover:text-primary-600">Services</a>
+                    <a href="#shop" class="text-gray-700 hover:text-primary-600">Shop</a>
+                    <a href="#investors" class="text-gray-700 hover:text-primary-600">Investors</a>
+                    <a href="#contact" class="text-gray-700 hover:text-primary-600">Contact</a>
+                    <button onclick="showLoginModal()" class="bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">
+                        Internet Login
                     </button>
                 </div>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <!-- Hero Section -->
-        <section class="gradient-bg text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h1 class="text-5xl font-bold mb-6 leading-tight">
-                            Complete Digital Solutions for Homes & Businesses
-                        </h1>
-                        <p class="text-xl mb-8 opacity-90">
-                            High-speed internet, professional CCTV installation, electrical services, 
-                            and premium equipment - all in one place.
-                        </p>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="showSignup()" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                                Get Started Free
-                            </button>
-                            <button onclick="scrollToServices()" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                                View Services
-                            </button>
+    <!-- Hero Section -->
+    <section id="home" class="hero-gradient text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="relative">
+                    <h1 class="text-5xl font-bold mb-6 leading-tight">
+                        Complete Digital & Security Solutions
+                    </h1>
+                    <p class="text-xl mb-8 opacity-90">
+                        Professional internet installation, CCTV security, electrical services, 
+                        and premium equipment supply. Serving Kiambu, Nairobi, and surrounding areas.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#services" class="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100">
+                            View Services
+                        </a>
+                        <a href="#contact" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600">
+                            Contact Us
+                        </a>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-6 mt-12">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold mb-2">500+</div>
+                            <div class="text-sm opacity-80">Happy Clients</div>
                         </div>
-                        <div class="mt-8 flex items-center space-x-6">
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-300 text-xl mr-2"></i>
-                                <span>24/7 Support</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-300 text-xl mr-2"></i>
-                                <span>Free Installation</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-300 text-xl mr-2"></i>
-                                <span>Warranty Included</span>
-                            </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold mb-2">24/7</div>
+                            <div class="text-sm opacity-80">Support</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold mb-2">98%</div>
+                            <div class="text-sm opacity-80">Satisfaction</div>
                         </div>
                     </div>
-                    <div>
+                </div>
+                <div class="relative">
+                    <div class="floating">
                         <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" 
-                             alt="Smart Home Automation" class="rounded-2xl shadow-2xl">
+                             alt="Smart Home" class="rounded-2xl shadow-2xl">
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Services Section -->
-        <section id="services" class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Professional solutions for all your digital and security needs
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Professional Services</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    High-quality solutions for homes and businesses across Kenya
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Internet Services -->
+                <div class="service-card bg-gray-50 p-8">
+                    <div class="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-wifi text-primary-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-4">High-Speed Internet</h3>
+                    <p class="text-gray-600 text-center mb-6">
+                        Fiber optic internet solutions for gamers, homes, and businesses
                     </p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Gamer Pro Packages</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Business Solutions</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Home Premium</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>ISP Infrastructure</span>
+                        </li>
+                    </ul>
+                    <div class="text-center">
+                        <button onclick="openBookingModal('internet')" class="bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700">
+                            Book Installation
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Internet Services -->
-                    <div class="card-hover bg-gray-50 p-8 rounded-xl">
-                        <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-                            <i class="fas fa-wifi text-purple-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-4">High-Speed Internet</h3>
-                        <p class="text-gray-600 mb-6">Fiber optic internet for homes, businesses, and gamers with speeds up to 10Gbps.</p>
-                        <ul class="space-y-3 mb-8">
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Gamer Pro Packages</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Business Solutions</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Home Premium</span>
-                            </li>
-                        </ul>
-                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80" 
-                             alt="Internet Installation" class="rounded-lg mb-4">
-                        <button onclick="showSignup()" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700">
-                            Get Connected
+                <!-- CCTV Services -->
+                <div class="service-card bg-gray-50 p-8">
+                    <div class="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-video text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-4">CCTV Security</h3>
+                    <p class="text-gray-600 text-center mb-6">
+                        Professional surveillance systems with AI detection and remote monitoring
+                    </p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>HD & 4K Cameras</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Smart Motion Detection</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Mobile App Access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>24/7 Monitoring</span>
+                        </li>
+                    </ul>
+                    <div class="text-center">
+                        <button onclick="openBookingModal('cctv')" class="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700">
+                            Book Installation
                         </button>
                     </div>
+                </div>
 
-                    <!-- CCTV Services -->
-                    <div class="card-hover bg-gray-50 p-8 rounded-xl">
-                        <div class="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center mb-6">
-                            <i class="fas fa-video text-red-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-4">CCTV Security</h3>
-                        <p class="text-gray-600 mb-6">Professional surveillance systems with AI detection and remote monitoring.</p>
-                        <ul class="space-y-3 mb-8">
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>HD & 4K Cameras</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Smart Motion Detection</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Cloud Storage</span>
-                            </li>
-                        </ul>
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80" 
-                             alt="CCTV Installation" class="rounded-lg mb-4">
-                        <button onclick="showSignup()" class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">
-                            Secure Your Property
-                        </button>
+                <!-- Electrical Services -->
+                <div class="service-card bg-gray-50 p-8">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-lg flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-bolt text-yellow-600 text-2xl"></i>
                     </div>
-
-                    <!-- Electrical Services -->
-                    <div class="card-hover bg-gray-50 p-8 rounded-xl">
-                        <div class="w-16 h-16 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
-                            <i class="fas fa-bolt text-yellow-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-4">Electrical Solutions</h3>
-                        <p class="text-gray-600 mb-6">Professional electrical installations, maintenance, and emergency services.</p>
-                        <ul class="space-y-3 mb-8">
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Smart Home Wiring</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>Generator Installation</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-green-500 mr-2"></i>
-                                <span>24/7 Emergency</span>
-                            </li>
-                        </ul>
-                        <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=400&q=80" 
-                             alt="Electrical Work" class="rounded-lg mb-4">
-                        <button onclick="showSignup()" class="w-full bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-yellow-700">
-                            Book Electrician
+                    <h3 class="text-2xl font-bold text-center mb-4">Electrical Solutions</h3>
+                    <p class="text-gray-600 text-center mb-6">
+                        Professional electrical installations, maintenance, and emergency services
+                    </p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Smart Home Wiring</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Generator Installation</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Solar Systems</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>24/7 Emergency</span>
+                        </li>
+                    </ul>
+                    <div class="text-center">
+                        <button onclick="openBookingModal('electrical')" class="bg-yellow-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-yellow-700">
+                            Book Service
                         </button>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Equipment Shop Preview -->
-        <section id="shop" class="py-20 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Premium Equipment Shop</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        High-quality equipment for all your installation needs
-                    </p>
-                </div>
+    <!-- Equipment Shop -->
+    <section id="shop" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Premium Equipment Shop</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    High-quality installation equipment with professional setup and warranty
+                </p>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Product 1 -->
-                    <div class="card-hover bg-white rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1597764690470-664574b1e6d4?auto=format&fit=crop&w=400&q=80" 
-                             alt="WiFi 6 Router" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2">WiFi 6 Router</h3>
-                            <p class="text-gray-600 text-sm mb-3">High-speed professional router</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">Ksh 15,000</span>
-                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
-                                    Buy Now
-                                </button>
-                            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Product 1 -->
+                <div class="service-card bg-white rounded-xl overflow-hidden">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://images.unsplash.com/photo-1597764690470-664574b1e6d4?auto=format&fit=crop&w=600&q=80" 
+                             alt="WiFi 6 Router" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-primary-600 text-white px-3 py-1 rounded-full text-sm">
+                            Free Installation
                         </div>
                     </div>
-
-                    <!-- Product 2 -->
-                    <div class="card-hover bg-white rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80" 
-                             alt="4K CCTV Camera" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2">4K CCTV Camera</h3>
-                            <p class="text-gray-600 text-sm mb-3">Professional security camera</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">Ksh 8,500</span>
-                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
-                                    Buy Now
-                                </button>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2">WiFi 6 Router</h3>
+                        <p class="text-gray-600 text-sm mb-3">Professional high-speed mesh router</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-xl font-bold text-primary-600">Ksh 15,000</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 3 -->
-                    <div class="card-hover bg-white rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80" 
-                             alt="Generator" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2">Silent Generator</h3>
-                            <p class="text-gray-600 text-sm mb-3">10KVA backup power</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">Ksh 120,000</span>
-                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
-                                    Buy Now
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 4 -->
-                    <div class="card-hover bg-white rounded-xl overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80" 
-                             alt="Tool Kit" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2">Fiber Tool Kit</h3>
-                            <p class="text-gray-600 text-sm mb-3">Complete installation tools</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">Ksh 35,000</span>
-                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
-                                    Buy Now
-                                </button>
-                            </div>
+                            <button onclick="addToCart('WiFi 6 Router')" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="text-center mt-12">
-                    <button onclick="showLogin()" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700">
-                        <i class="fas fa-store mr-2"></i>Visit Full Shop
+                <!-- Product 2 -->
+                <div class="service-card bg-white rounded-xl overflow-hidden">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" 
+                             alt="4K CCTV Camera" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-full text-sm">
+                            2 Years Warranty
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2">4K CCTV Camera</h3>
+                        <p class="text-gray-600 text-sm mb-3">Professional security camera with night vision</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-xl font-bold text-primary-600">Ksh 8,500</span>
+                            </div>
+                            <button onclick="addToCart('4K CCTV Camera')" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="service-card bg-white rounded-xl overflow-hidden">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&q=80" 
+                             alt="Silent Generator" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+                            In Stock
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2">Silent Generator</h3>
+                        <p class="text-gray-600 text-sm mb-3">10KVA silent diesel generator with ATS</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-xl font-bold text-primary-600">Ksh 120,000</span>
+                            </div>
+                            <button onclick="addToCart('Silent Generator')" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="service-card bg-white rounded-xl overflow-hidden">
+                    <div class="relative overflow-hidden h-48">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&q=80" 
+                             alt="Fiber Tool Kit" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3 bg-yellow-600 text-white px-3 py-1 rounded-full text-sm">
+                            Professional
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg mb-2">Fiber Tool Kit</h3>
+                        <p class="text-gray-600 text-sm mb-3">Complete fiber optic installation toolkit</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-xl font-bold text-primary-600">Ksh 35,000</span>
+                            </div>
+                            <button onclick="addToCart('Fiber Tool Kit')" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="viewAllProducts()" class="bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-black">
+                    View All Products <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investors Section -->
+    <section id="investors" class="py-20 bg-gradient-to-r from-gray-900 to-primary-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Investment Opportunities</h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Join us in expanding digital infrastructure across Kenya
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="investor-tier bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+                    <div class="text-4xl text-yellow-400 mb-4">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Seed Investment</h3>
+                    <p class="opacity-80 mb-6">Entry level investment for individual investors</p>
+                    <div class="text-3xl font-bold text-yellow-400 mb-6">Ksh 500K - 2M</div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>8-10% Annual Returns</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>Quarterly Reports</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>Priority Service</span>
+                        </li>
+                    </ul>
+                    <button onclick="showInvestorForm('seed')" class="w-full bg-yellow-500 text-gray-900 py-3 rounded-lg font-semibold hover:bg-yellow-400">
+                        Express Interest
+                    </button>
+                </div>
+
+                <div class="investor-tier bg-white/10 backdrop-blur-sm rounded-2xl p-8 border-2 border-yellow-400">
+                    <div class="text-4xl text-yellow-400 mb-4">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Growth Investment</h3>
+                    <p class="opacity-80 mb-6">Strategic investment for business partners</p>
+                    <div class="text-3xl font-bold text-yellow-400 mb-6">Ksh 2M - 10M</div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>12-15% Annual Returns</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>Monthly Updates</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>Board Advisory Role</span>
+                        </li>
+                    </ul>
+                    <button onclick="showInvestorForm('growth')" class="w-full bg-yellow-500 text-gray-900 py-3 rounded-lg font-semibold hover:bg-yellow-400">
+                        Schedule Meeting
+                    </button>
+                </div>
+
+                <div class="investor-tier bg-white/10 backdrop-blur-sm rounded-2xl p-8">
+                    <div class="text-4xl text-yellow-400 mb-4">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Enterprise Partnership</h3>
+                    <p class="opacity-80 mb-6">Major partnership for corporate investors</p>
+                    <div class="text-3xl font-bold text-yellow-400 mb-6">Ksh 10M+</div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>15-20% Annual Returns</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>Board Seat</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                            <span>Profit Sharing</span>
+                        </li>
+                    </ul>
+                    <button onclick="showInvestorForm('enterprise')" class="w-full bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-black">
+                        Contact CEO
                     </button>
                 </div>
             </div>
-        </section>
 
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 bg-gradient-to-r from-purple-900 to-blue-900 text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold mb-4">Contact Us</h2>
-                    <p class="text-xl opacity-90 max-w-3xl mx-auto">
-                        Ready to get started? Contact our team for professional solutions
+            <!-- Investment Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <div class="text-center p-6 bg-white/5 rounded-xl">
+                    <div class="text-3xl font-bold mb-2">15+</div>
+                    <div class="opacity-80">Active Investors</div>
+                </div>
+                <div class="text-center p-6 bg-white/5 rounded-xl">
+                    <div class="text-3xl font-bold mb-2">Ksh 25M</div>
+                    <div class="opacity-80">Total Investment</div>
+                </div>
+                <div class="text-center p-6 bg-white/5 rounded-xl">
+                    <div class="text-3xl font-bold mb-2">98%</div>
+                    <div class="opacity-80">Success Rate</div>
+                </div>
+                <div class="text-center p-6 bg-white/5 rounded-xl">
+                    <div class="text-3xl font-bold mb-2">3</div>
+                    <div class="opacity-80">Years Operating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Contact Us</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Get in touch for professional solutions and support
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <div class="bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="text-4xl text-primary-600 mb-4">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Call Us</h3>
+                    <p class="text-gray-700 mb-1">0113 898 413</p>
+                    <p class="text-gray-700 mb-1">0717 005 857</p>
+                    <p class="text-gray-500 text-sm mt-2">Available 8AM - 8PM Daily</p>
+                    <p class="text-gray-500 text-sm">24/7 Emergency Services</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="text-4xl text-primary-600 mb-4">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Email Us</h3>
+                    <p class="text-gray-700 mb-1">writerjackrey@gmail.com</p>
+                    <p class="text-gray-700 mb-1">Muhiadaniel278@gmail.com</p>
+                    <p class="text-gray-500 text-sm mt-2">Response within 24 hours</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="text-4xl text-primary-600 mb-4">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Location</h3>
+                    <p class="text-gray-700 mb-1">Thika, Kenya</p>
+                    <p class="text-gray-700 mb-1">Serving Kiambu & Nairobi</p>
+                    <p class="text-gray-500 text-sm mt-2">On-site consultations available</p>
+                    <p class="text-gray-500 text-sm">Nationwide service coverage</p>
+                </div>
+            </div>
+
+            <!-- Quick Contact Form -->
+            <div class="max-w-2xl mx-auto bg-gray-50 p-8 rounded-2xl">
+                <h3 class="text-2xl font-bold text-center mb-6">Send Us a Message</h3>
+                <form id="quickContactForm" class="space-y-4" onsubmit="submitContactForm(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                            <input type="text" name="name" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                            <input type="tel" name="phone" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                        <input type="email" name="email" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Service Needed</label>
+                        <select name="service" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="">Select Service</option>
+                            <option value="internet">Internet Installation</option>
+                            <option value="cctv">CCTV Installation</option>
+                            <option value="electrical">Electrical Services</option>
+                            <option value="shop">Equipment Purchase</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                        <textarea name="message" rows="4" 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="bg-primary-600 p-2 rounded-lg">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <span class="text-xl font-bold">Kings Fiber Connection</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Professional digital solutions provider serving Kenya with quality and reliability.
                     </p>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="text-center p-6">
-                        <div class="text-3xl mb-4">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Call Us</h3>
-                        <p class="opacity-90">0113 898 413</p>
-                        <p class="opacity-90">0717 005 857</p>
-                    </div>
-                    <div class="text-center p-6">
-                        <div class="text-3xl mb-4">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Email Us</h3>
-                        <p class="opacity-90">writerjackrey@gmail.com</p>
-                        <p class="opacity-90">support@kingsfiber.co.ke</p>
-                    </div>
-                    <div class="text-center p-6">
-                        <div class="text-3xl mb-4">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Location</h3>
-                        <p class="opacity-90">Thika, Kenya</p>
-                        <p class="opacity-90">Serving Nationwide</p>
-                    </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#services" class="hover:text-white">Internet Installation</a></li>
+                        <li><a href="#services" class="hover:text-white">CCTV Security Systems</a></li>
+                        <li><a href="#services" class="hover:text-white">Electrical Services</a></li>
+                        <li><a href="#shop" class="hover:text-white">Equipment Sales</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white">About Us</a></li>
+                        <li><a href="#contact" class="hover:text-white">Contact</a></li>
+                        <li><a href="#investors" class="hover:text-white">Investors</a></li>
+                        <li><a href="#" onclick="openBookingModal('general')" class="hover:text-white">Book Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Business Hours</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Monday - Friday: 8AM - 8PM</li>
+                        <li>Saturday: 9AM - 6PM</li>
+                        <li>Sunday: 10AM - 4PM</li>
+                        <li class="text-green-400 font-semibold">24/7 Emergency Services</li>
+                    </ul>
                 </div>
             </div>
-        </section>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Kings Fiber Connection. All rights reserved. | Thika, Kenya</p>
+            </div>
+        </div>
+    </footer>
 
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-white py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div>
-                        <div class="flex items-center space-x-2 mb-4">
-                            <i class="fas fa-crown text-purple-400"></i>
-                            <span class="text-xl font-bold">Kings Fiber</span>
-                        </div>
-                        <p class="text-gray-400">
-                            Complete digital solutions provider for homes and businesses across Kenya.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Services</h4>
-                        <ul class="space-y-2 text-gray-400">
-                            <li><a href="#services" class="hover:text-white">Internet Installation</a></li>
-                            <li><a href="#services" class="hover:text-white">CCTV Security</a></li>
-                            <li><a href="#services" class="hover:text-white">Electrical Services</a></li>
-                            <li><a href="#shop" class="hover:text-white">Equipment Shop</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Company</h4>
-                        <ul class="space-y-2 text-gray-400">
-                            <li><a href="#about" class="hover:text-white">About Us</a></li>
-                            <li><a href="#contact" class="hover:text-white">Contact</a></li>
-                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Careers</a></li>
-                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Partnership</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Legal</h4>
-                        <ul class="space-y-2 text-gray-400">
-                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Terms of Service</a></li>
-                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Privacy Policy</a></li>
-                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Refund Policy</a></li>
-                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Service Agreement</a></li>
-                        </ul>
-                    </div>
+    <!-- Login Modal (Internet Users Only) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Internet Client Login</h3>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                    <p>&copy; 2024 Kings Fiber Connection. All rights reserved.</p>
+                
+                <p class="text-gray-600 mb-6">
+                    Only internet service clients can login to view billing, router passwords, and usage details.
+                    <br><br>
+                    <span class="text-sm text-gray-500">
+                        Need internet service? <a href="#contact" onclick="closeModal()" class="text-primary-600 hover:text-primary-700">Contact us to get connected</a>
+                    </span>
+                </p>
+                
+                <form id="internetLoginForm" class="space-y-6" onsubmit="loginInternetClient(event)">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Client ID / Username</label>
+                        <input type="text" id="clientUsername" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               placeholder="Provided by admin">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="clientPassword" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               placeholder="Your secure password">
+                    </div>
+                    <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700">
+                        Login to Dashboard
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-500 text-sm">
+                        Forgot password? Contact support: 0113 898 413
+                    </p>
                 </div>
             </div>
-        </footer>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900" id="bookingTitle">Book Service</h3>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="bookingForm" class="space-y-6" onsubmit="submitBooking(event)">
+                    <input type="hidden" id="serviceType">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                            <input type="text" name="name" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" name="phone" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input type="email" name="email"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location/Area *</label>
+                        <input type="text" name="location" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               placeholder="e.g., Westlands, Nairobi">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
+                        <input type="date" name="date"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Additional Details</label>
+                        <textarea name="details" rows="4"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                  placeholder="Tell us about your specific requirements..."></textarea>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="closeModal()" 
+                                class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="flex-1 bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700">
+                            Submit Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investor Form Modal -->
+    <div id="investorModal" class="modal">
+        <div class="modal-content">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900" id="investorTitle">Investment Interest</h3>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="investorForm" class="space-y-6" onsubmit="submitInvestorForm(event)">
+                    <input type="hidden" id="investmentType">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                            <input type="text" name="name" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Company/Organization</label>
+                            <input type="text" name="company"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" name="email" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" name="phone" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Investment Amount Range *</label>
+                        <select name="amount" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="">Select Range</option>
+                            <option value="500k-2m">Ksh 500,000 - 2,000,000</option>
+                            <option value="2m-5m">Ksh 2,000,000 - 5,000,000</option>
+                            <option value="5m-10m">Ksh 5,000,000 - 10,000,000</option>
+                            <option value="10m+">Ksh 10,000,000+</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Investment Experience</label>
+                        <textarea name="experience" rows="3"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                  placeholder="Briefly describe your investment experience..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">How did you hear about us?</label>
+                        <select name="source" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="">Select option</option>
+                            <option value="referral">Referral</option>
+                            <option value="website">Website</option>
+                            <option value="social">Social Media</option>
+                            <option value="advertisement">Advertisement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="investorAgreement" required 
+                               class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                        <label for="investorAgreement" class="ml-2 text-sm text-gray-600">
+                            I agree to receive investment information and updates
+                        </label>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="closeModal()" 
+                                class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="flex-1 bg-yellow-500 text-gray-900 py-3 rounded-lg font-semibold hover:bg-yellow-400">
+                            Submit Interest
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-500 text-sm">
+                        Our team will contact you within 48 hours to discuss investment opportunities.
+                        <br>
+                        <strong>Contact: writerjackrey@gmail.com | 0113 898 413</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="p-8 text-center">
+                <div class="text-green-500 text-5xl mb-4">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4" id="successTitle">Success!</h3>
+                <p class="text-gray-600 mb-6" id="successMessage">
+                    Your request has been submitted successfully.
+                </p>
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <h4 class="font-bold text-gray-900 mb-2">Contact Information</h4>
+                    <p class="text-gray-600">Email: writerjackrey@gmail.com</p>
+                    <p class="text-gray-600">Email: Muhiadaniel278@gmail.com</p>
+                    <p class="text-gray-600">Phone: 0113 898 413 | 0717 005 857</p>
+                </div>
+                <button onclick="closeModal()" class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Notification -->
+    <div id="cartNotification" class="fixed bottom-4 right-4 bg-primary-600 text-white p-4 rounded-lg shadow-lg hidden z-50">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle"></i>
+            <span>Item added to cart!</span>
+        </div>
     </div>
 
     <script>
-        // Database simulation (In production, replace with real backend API calls)
-        const DB = {
-            users: JSON.parse(localStorage.getItem('kingsFiberUsers')) || [
-                {
-                    id: 1,
-                    email: 'admin@kingsfiber.co.ke',
-                    password: 'admin123',
-                    firstName: 'System',
-                    lastName: 'Admin',
-                    phone: '0717005857',
-                    role: 'admin',
-                    services: [],
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    email: 'customer@example.com',
-                    password: 'customer123',
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    phone: '0712345678',
-                    role: 'customer',
-                    services: [
-                        {
-                            id: 1,
-                            type: 'internet',
-                            name: 'Gamer Pro 1Gbps',
-                            price: 5000,
-                            status: 'active',
-                            startDate: '2024-01-01',
-                            renewalDate: '2024-02-01',
-                            usage: {
-                                dataUsed: '350GB',
-                                dataLimit: 'Unlimited',
-                                speed: '1Gbps',
-                                uptime: '99.8%'
-                            }
-                        }
-                    ],
-                    invoices: [
-                        {
-                            id: 'INV001',
-                            service: 'Gamer Pro 1Gbps',
-                            amount: 5000,
-                            dueDate: '2024-02-01',
-                            status: 'paid',
-                            paymentDate: '2024-01-25'
-                        }
-                    ],
-                    createdAt: new Date().toISOString()
-                }
-            ],
-            services: JSON.parse(localStorage.getItem('kingsFiberServices')) || [
-                {
-                    id: 1,
-                    category: 'internet',
-                    name: 'Gamer Pro',
-                    speed: '1 Gbps',
-                    price: 5000,
-                    features: ['Ultra Low Latency', 'Gaming Router', 'DDoS Protection', 'Priority Support'],
-                    description: 'Perfect for gamers and streaming',
-                    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80'
-                },
-                {
-                    id: 2,
-                    category: 'internet',
-                    name: 'Home Premium',
-                    speed: '200 Mbps',
-                    price: 3500,
-                    features: ['Unlimited Data', 'Wi-Fi 6 Router', 'Smart Home Ready', 'Free Installation'],
-                    description: 'Ideal for family homes',
-                    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80'
-                },
-                {
-                    id: 3,
-                    category: 'cctv',
-                    name: 'Basic Home Security',
-                    price: 15000,
-                    features: ['4 HD Cameras', '1TB DVR', 'Night Vision', 'Mobile App Access'],
-                    description: 'Essential home security package',
-                    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80'
-                }
-            ],
-            products: JSON.parse(localStorage.getItem('kingsFiberProducts')) || [
-                {
-                    id: 1,
-                    name: 'WiFi 6 Router',
-                    category: 'routers',
-                    price: 15000,
-                    image: 'https://images.unsplash.com/photo-1597764690470-664574b1e6d4?auto=format&fit=crop&w=400&q=80',
-                    description: 'Professional grade WiFi 6 router with mesh capabilities',
-                    stock: 25
-                }
-            ]
-        };
-
-        // Application State
-        let currentUser = null;
-        let cart = JSON.parse(localStorage.getItem('kingsFiberCart')) || [];
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            loadLandingPage();
-        });
-
-        function checkAuth() {
-            const token = localStorage.getItem('kingsFiberToken');
-            const userId = localStorage.getItem('kingsFiberUserId');
-            
-            if (token && userId) {
-                const user = DB.users.find(u => u.id == userId);
-                if (user) {
-                    loginUser(user);
-                }
-            }
-        }
-
-        function showLogin() {
-            document.getElementById('loginModal').style.display = 'block';
-            document.getElementById('signupModal').style.display = 'none';
-        }
-
-        function showSignup() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('signupModal').style.display = 'block';
-        }
-
-        function closeModals() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('signupModal').style.display = 'none';
-        }
-
-        // Login Form
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            const user = DB.users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                loginUser(user);
-                closeModals();
-            } else {
-                alert('Invalid email or password');
-            }
-        });
-
-        // Signup Form
-        document.getElementById('signupForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('signupEmail').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (password !== confirmPassword) {
-                alert('Passwords do not match');
-                return;
-            }
-
-            if (DB.users.some(u => u.email === email)) {
-                alert('Email already registered');
-                return;
-            }
-
-            const newUser = {
-                id: DB.users.length + 1,
-                email,
-                password,
-                firstName,
-                lastName,
-                phone,
-                role: 'customer',
-                services: [],
-                invoices: [],
-                createdAt: new Date().toISOString()
-            };
-
-            DB.users.push(newUser);
-            localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
-            
-            loginUser(newUser);
-            closeModals();
-            alert('Account created successfully!');
-        });
-
-        function loginUser(user) {
-            currentUser = user;
-            
-            // Create token (in production, use JWT from backend)
-            const token = btoa(JSON.stringify({ userId: user.id, timestamp: Date.now() }));
-            localStorage.setItem('kingsFiberToken', token);
-            localStorage.setItem('kingsFiberUserId', user.id);
-            
-            // Show app, hide landing page
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('appContainer').classList.remove('hidden');
-            
-            // Update UI based on role
-            updateUserUI();
-            showDashboard();
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                currentUser = null;
-                localStorage.removeItem('kingsFiberToken');
-                localStorage.removeItem('kingsFiberUserId');
-                
-                document.getElementById('appContainer').classList.add('hidden');
-                document.getElementById('landingPage').style.display = 'block';
-                
-                // Reset forms
-                document.getElementById('loginForm').reset();
-            }
-        }
-
-        function updateUserUI() {
-            if (!currentUser) return;
-
-            // Update user info
-            document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-            document.getElementById('userRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Customer';
-
-            // Show/hide admin navigation
-            if (currentUser.role === 'admin') {
-                document.getElementById('adminNav').classList.remove('hidden');
-            } else {
-                document.getElementById('adminNav').classList.add('hidden');
-            }
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
-        }
-
-        function toggleNotifications() {
-            const panel = document.getElementById('notificationPanel');
-            panel.classList.toggle('hidden');
-            loadNotifications();
-        }
-
-        function toggleUserMenu() {
-            const menu = document.getElementById('userMenu');
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('hidden');
         }
 
-        function loadNotifications() {
-            const list = document.getElementById('notificationList');
-            list.innerHTML = '';
-            
-            const notifications = [
-                { id: 1, text: 'Your internet bill is due in 3 days', type: 'warning', time: '2 hours ago' },
-                { id: 2, text: 'New service package available', type: 'info', time: '1 day ago' },
-                { id: 3, text: 'Service maintenance scheduled', type: 'info', time: '2 days ago' }
-            ];
-
-            notifications.forEach(notif => {
-                const div = document.createElement('div');
-                div.className = 'p-4 border-b hover:bg-gray-50 cursor-pointer';
-                div.innerHTML = `
-                    <div class="flex items-start">
-                        <div class="flex-1">
-                            <p class="text-sm">${notif.text}</p>
-                            <p class="text-xs text-gray-500 mt-1">${notif.time}</p>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // Navigation Functions
-        function showDashboard() {
-            hideAllSections();
-            document.getElementById('userDashboard').classList.remove('hidden');
-            loadDashboard();
-        }
-
-        function showAdminDashboard() {
-            hideAllSections();
-            document.getElementById('adminDashboard').classList.remove('hidden');
-            loadAdminDashboard();
-        }
-
-        function showMyServices() {
-            hideAllSections();
-            loadUserServices();
-            document.getElementById('userDashboard').classList.remove('hidden');
-        }
-
-        function showBilling() {
-            hideAllSections();
-            loadUserBilling();
-            document.getElementById('userDashboard').classList.remove('hidden');
-        }
-
-        function showShop() {
-            hideAllSections();
-            document.getElementById('shopContent').classList.remove('hidden');
-            loadShop();
-        }
-
-        function showProfile() {
-            hideAllSections();
-            document.getElementById('profileContent').classList.remove('hidden');
-            loadProfile();
-        }
-
-        function showServiceManagement() {
-            hideAllSections();
-            document.getElementById('serviceManagement').classList.remove('hidden');
-            loadServiceManagement();
-        }
-
-        function hideAllSections() {
-            document.querySelectorAll('#userDashboard, #adminDashboard, #serviceManagement, #shopContent, #profileContent').forEach(el => {
-                el.classList.add('hidden');
-            });
-        }
-
-        // Dashboard Loading
-        function loadDashboard() {
-            const dashboard = document.getElementById('userDashboard');
-            
-            if (currentUser.role === 'admin') {
-                dashboard.innerHTML = `
-                    <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-                        <p class="text-gray-600">Manage your business operations</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Total Users</p>
-                            <p class="text-3xl font-bold text-gray-900">${DB.users.length}</p>
-                        </div>
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Active Services</p>
-                            <p class="text-3xl font-bold text-green-600">${DB.services.length}</p>
-                        </div>
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Revenue Today</p>
-                            <p class="text-3xl font-bold text-purple-600">Ksh 0</p>
-                        </div>
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Pending Bookings</p>
-                            <p class="text-3xl font-bold text-yellow-600">0</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="dashboard-card">
-                            <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
-                            <div class="space-y-3">
-                                <button onclick="showUserManagement()" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                                    <i class="fas fa-users mr-2"></i>Manage Users
-                                </button>
-                                <button onclick="showServiceManagement()" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                                    <i class="fas fa-cogs mr-2"></i>Manage Services
-                                </button>
-                                <button onclick="showBookingManagement()" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
-                                    <i class="fas fa-calendar-check mr-2"></i>Manage Bookings
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="dashboard-card">
-                            <h3 class="text-lg font-bold mb-4">Recent Activity</h3>
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
-                                    <div>
-                                        <p class="font-medium">New user registered</p>
-                                        <p class="text-sm text-gray-500">Just now</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                // Customer Dashboard
-                const activeServices = currentUser.services.filter(s => s.status === 'active').length;
-                const dueSoon = currentUser.invoices.filter(i => i.status === 'pending').length;
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
                 
-                dashboard.innerHTML = `
-                    <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-gray-900">Welcome back, ${currentUser.firstName}!</h1>
-                        <p class="text-gray-600">Here's your service overview</p>
-                    </div>
+                const target = document.querySelector(targetId);
+                if (target) {
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('hidden');
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Active Services</p>
-                            <p class="text-3xl font-bold text-gray-900">${activeServices}</p>
-                        </div>
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Due Soon</p>
-                            <p class="text-3xl font-bold text-yellow-600">${dueSoon}</p>
-                        </div>
-                        <div class="dashboard-card">
-                            <p class="text-gray-500">Support Tickets</p>
-                            <p class="text-3xl font-bold text-blue-600">0</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="dashboard-card">
-                            <h3 class="text-lg font-bold mb-4">My Services</h3>
-                            ${currentUser.services.length > 0 ? `
-                                <div class="space-y-4">
-                                    ${currentUser.services.map(service => `
-                                        <div class="p-4 border rounded-lg">
-                                            <div class="flex justify-between items-start mb-2">
-                                                <h4 class="font-bold">${service.name}</h4>
-                                                <span class="status-badge status-${service.status}">${service.status}</span>
-                                            </div>
-                                            <p class="text-gray-600 text-sm mb-3">${service.description || ''}</p>
-                                            <div class="flex justify-between text-sm">
-                                                <span>Renews: ${service.renewalDate}</span>
-                                                <span class="font-bold">Ksh ${service.price}/month</span>
-                                            </div>
-                                            ${service.usage ? `
-                                                <div class="mt-3 pt-3 border-t">
-                                                    <p class="text-sm font-medium mb-1">Usage This Month:</p>
-                                                    <p class="text-sm text-gray-600">${service.usage.dataUsed} / ${service.usage.dataLimit}</p>
-                                                    <p class="text-sm text-gray-600">Speed: ${service.usage.speed}</p>
-                                                    <p class="text-sm text-gray-600">Uptime: ${service.usage.uptime}</p>
-                                                </div>
-                                            ` : ''}
-                                            <div class="mt-4 flex space-x-2">
-                                                <button onclick="renewService(${service.id})" class="flex-1 bg-purple-600 text-white py-2 rounded text-sm hover:bg-purple-700">
-                                                    Renew
-                                                </button>
-                                                <button onclick="upgradeService(${service.id})" class="flex-1 border border-purple-600 text-purple-600 py-2 rounded text-sm hover:bg-purple-50">
-                                                    Upgrade
-                                                </button>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : `
-                                <div class="text-center py-8">
-                                    <i class="fas fa-wifi text-4xl text-gray-300 mb-4"></i>
-                                    <p class="text-gray-500 mb-4">No active services yet</p>
-                                    <button onclick="bookService()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
-                                        Get Started
-                                    </button>
-                                </div>
-                            `}
-                        </div>
-                        
-                        <div class="dashboard-card">
-                            <h3 class="text-lg font-bold mb-4">Recent Invoices</h3>
-                            ${currentUser.invoices.length > 0 ? `
-                                <div class="space-y-3">
-                                    ${currentUser.invoices.map(invoice => `
-                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
-                                            <div>
-                                                <p class="font-medium">${invoice.service}</p>
-                                                <p class="text-sm text-gray-500">Due: ${invoice.dueDate}</p>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="font-bold">Ksh ${invoice.amount}</p>
-                                                <span class="text-xs ${invoice.status === 'paid' ? 'text-green-600' : 'text-red-600'}">
-                                                    ${invoice.status}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : `
-                                <div class="text-center py-8">
-                                    <i class="fas fa-file-invoice text-4xl text-gray-300 mb-4"></i>
-                                    <p class="text-gray-500">No invoices yet</p>
-                                </div>
-                            `}
-                            
-                            <div class="mt-6">
-                                <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <button onclick="bookService()" class="p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
-                                        <i class="fas fa-plus-circle mb-2"></i>
-                                        <p class="text-sm font-medium">New Service</p>
-                                    </button>
-                                    <button onclick="renewService()" class="p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
-                                        <i class="fas fa-sync-alt mb-2"></i>
-                                        <p class="text-sm font-medium">Renew Service</p>
-                                    </button>
-                                    <button onclick="reportIssue()" class="p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
-                                        <i class="fas fa-exclamation-triangle mb-2"></i>
-                                        <p class="text-sm font-medium">Report Issue</p>
-                                    </button>
-                                    <button onclick="showSupport()" class="p-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100">
-                                        <i class="fas fa-headset mb-2"></i>
-                                        <p class="text-sm font-medium">Get Support</p>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                    // Scroll to target
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Modal Functions
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function openBookingModal(serviceType) {
+            const modal = document.getElementById('bookingModal');
+            const title = document.getElementById('bookingTitle');
+            const serviceInput = document.getElementById('serviceType');
+            
+            serviceInput.value = serviceType;
+            
+            switch(serviceType) {
+                case 'internet':
+                    title.textContent = 'Book Internet Installation';
+                    break;
+                case 'cctv':
+                    title.textContent = 'Book CCTV Installation';
+                    break;
+                case 'electrical':
+                    title.textContent = 'Book Electrical Service';
+                    break;
+                default:
+                    title.textContent = 'Book Service';
             }
+            
+            modal.style.display = 'flex';
         }
 
-        function loadServiceManagement() {
-            const container = document.getElementById('serviceManagement');
+        function showInvestorForm(type) {
+            const modal = document.getElementById('investorModal');
+            const title = document.getElementById('investorTitle');
+            const typeInput = document.getElementById('investmentType');
             
-            container.innerHTML = `
-                <div class="mb-8">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-900">Service Management</h1>
-                            <p class="text-gray-600">Manage all service packages</p>
-                        </div>
-                        <button onclick="showAddServiceModal()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
-                            <i class="fas fa-plus mr-2"></i>Add Service
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="servicesTable" class="bg-white divide-y divide-gray-200">
-                            <!-- Services loaded by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            `;
+            typeInput.value = type;
             
-            loadServicesTable();
+            switch(type) {
+                case 'seed':
+                    title.textContent = 'Seed Investment Interest';
+                    break;
+                case 'growth':
+                    title.textContent = 'Growth Investment Interest';
+                    break;
+                case 'enterprise':
+                    title.textContent = 'Enterprise Partnership';
+                    break;
+            }
+            
+            modal.style.display = 'flex';
         }
 
-        function loadServicesTable() {
-            const table = document.getElementById('servicesTable');
-            table.innerHTML = '';
-            
-            DB.services.forEach(service => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">${service.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <img src="${service.image}" class="w-10 h-10 rounded-lg object-cover mr-3">
-                            <div>
-                                <div class="font-medium">${service.name}</div>
-                                <div class="text-sm text-gray-500">${service.description}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                            ${service.category}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap font-bold">Ksh ${service.price}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                            Active
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex space-x-2">
-                            <button onclick="editService(${service.id})" class="text-blue-600 hover:text-blue-900">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="deleteService(${service.id})" class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                table.appendChild(row);
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
             });
         }
 
-        function showAddServiceModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-xl font-bold">Add New Service</h3>
-                                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <form id="addServiceForm" class="space-y-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
-                                        <input type="text" id="serviceName" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                        <select id="serviceCategory" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                            <option value="internet">Internet</option>
-                                            <option value="cctv">CCTV</option>
-                                            <option value="electrical">Electrical</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea id="serviceDescription" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (Ksh)</label>
-                                        <input type="number" id="servicePrice" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                                        <input type="url" id="serviceImage" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Features (comma separated)</label>
-                                    <input type="text" id="serviceFeatures" placeholder="Feature 1, Feature 2, Feature 3" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                </div>
-                            </form>
-                            
-                            <div class="mt-6 flex justify-end space-x-3">
-                                <button onclick="this.closest('.modal-overlay').remove()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                                    Cancel
-                                </button>
-                                <button onclick="saveService()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                                    Save Service
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
+        function showSuccess(message, title = 'Success!') {
+            document.getElementById('successTitle').textContent = title;
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successModal').style.display = 'flex';
         }
 
-        function saveService() {
-            const name = document.getElementById('serviceName').value;
-            const category = document.getElementById('serviceCategory').value;
-            const description = document.getElementById('serviceDescription').value;
-            const price = parseInt(document.getElementById('servicePrice').value);
-            const image = document.getElementById('serviceImage').value || 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80';
-            const features = document.getElementById('serviceFeatures').value.split(',').map(f => f.trim());
-            
-            const newService = {
-                id: DB.services.length + 1,
-                name,
-                category,
-                description,
-                price,
-                image,
-                features,
-                speed: category === 'internet' ? '200 Mbps' : null
+        // Form Submissions
+        function loginInternetClient(e) {
+            e.preventDefault();
+            // Demo internet client data
+            const demoClients = {
+                'client001': 'demo123',
+                'client002': 'demo123'
             };
             
-            DB.services.push(newService);
-            localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
+            const username = document.getElementById('clientUsername').value;
+            const password = document.getElementById('clientPassword').value;
             
-            // Close modal and refresh
-            document.querySelector('.modal-overlay').remove();
-            loadServicesTable();
-            alert('Service added successfully!');
-        }
-
-        function editService(serviceId) {
-            const service = DB.services.find(s => s.id === serviceId);
-            if (!service) return;
-
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-xl font-bold">Edit Service</h3>
-                                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <form id="editServiceForm" class="space-y-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
-                                        <input type="text" id="editServiceName" value="${service.name}" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                        <select id="editServiceCategory" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                            <option value="internet" ${service.category === 'internet' ? 'selected' : ''}>Internet</option>
-                                            <option value="cctv" ${service.category === 'cctv' ? 'selected' : ''}>CCTV</option>
-                                            <option value="electrical" ${service.category === 'electrical' ? 'selected' : ''}>Electrical</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea id="editServiceDescription" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2">${service.description || ''}</textarea>
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (Ksh)</label>
-                                        <input type="number" id="editServicePrice" value="${service.price}" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                                        <input type="url" id="editServiceImage" value="${service.image}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Features (comma separated)</label>
-                                    <input type="text" id="editServiceFeatures" value="${service.features ? service.features.join(', ') : ''}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                                </div>
-                            </form>
-                            
-                            <div class="mt-6 flex justify-end space-x-3">
-                                <button onclick="this.closest('.modal-overlay').remove()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                                    Cancel
-                                </button>
-                                <button onclick="updateService(${serviceId})" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                                    Update Service
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-        }
-
-        function updateService(serviceId) {
-            const service = DB.services.find(s => s.id === serviceId);
-            if (!service) return;
-
-            service.name = document.getElementById('editServiceName').value;
-            service.category = document.getElementById('editServiceCategory').value;
-            service.description = document.getElementById('editServiceDescription').value;
-            service.price = parseInt(document.getElementById('editServicePrice').value);
-            service.image = document.getElementById('editServiceImage').value;
-            service.features = document.getElementById('editServiceFeatures').value.split(',').map(f => f.trim());
-            
-            localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
-            
-            document.querySelector('.modal-overlay').remove();
-            loadServicesTable();
-            alert('Service updated successfully!');
-        }
-
-        function deleteService(serviceId) {
-            if (confirm('Are you sure you want to delete this service?')) {
-                const index = DB.services.findIndex(s => s.id === serviceId);
-                if (index !== -1) {
-                    DB.services.splice(index, 1);
-                    localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
-                    loadServicesTable();
-                    alert('Service deleted successfully!');
-                }
+            if (demoClients[username] && demoClients[username] === password) {
+                alert('Internet client login successful! You can now access your dashboard.\n\nUsername: ' + username + '\nPassword: ' + password);
+                closeModal();
+            } else {
+                alert('Invalid credentials. Please contact admin at writerjackrey@gmail.com for access.');
             }
         }
 
-        function loadShop() {
-            const container = document.getElementById('shopContent');
+        function submitBooking(e) {
+            e.preventDefault();
             
-            container.innerHTML = `
-                <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900">Equipment Shop</h1>
-                    <p class="text-gray-600">Premium equipment for all your installation needs</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productsGrid">
-                    <!-- Products loaded by JavaScript -->
-                </div>
-            `;
+            // In production, this would send to backend
+            // For demo, show success message
+            showSuccess(
+                'Your service booking has been submitted. Our team will contact you within 24 hours.',
+                'Booking Submitted!'
+            );
             
-            loadProductsGrid();
+            // Reset form
+            e.target.reset();
         }
 
-        function loadProductsGrid() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '';
+        function submitInvestorForm(e) {
+            e.preventDefault();
             
-            DB.products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'bg-white rounded-xl shadow overflow-hidden card-hover';
-                productCard.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg mb-2">${product.name}</h3>
-                        <p class="text-gray-600 text-sm mb-3">${product.description}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-purple-600">Ksh ${product.price.toLocaleString()}</span>
-                            <button onclick="addToCart(${product.id})" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
-                                <i class="fas fa-cart-plus mr-1"></i>Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(productCard);
-            });
+            // In production, this would send to backend
+            showSuccess(
+                'Your investment interest has been submitted. Our CEO will contact you within 48 hours.',
+                'Interest Submitted!'
+            );
+            
+            // Reset form
+            e.target.reset();
         }
 
-        function addToCart(productId) {
-            const product = DB.products.find(p => p.id === productId);
-            if (!product) return;
-
-            cart.push({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                quantity: 1
-            });
-            
-            localStorage.setItem('kingsFiberCart', JSON.stringify(cart));
-            alert('Product added to cart!');
+        function submitContactForm(e) {
+            e.preventDefault();
+            showSuccess(
+                'Your message has been sent. We will respond within 24 hours.',
+                'Message Sent!'
+            );
+            e.target.reset();
         }
 
-        function bookService() {
-            if (!currentUser) {
-                showLogin();
-                return;
-            }
+        // Shop Functions
+        function addToCart(productName) {
+            const notification = document.getElementById('cartNotification');
             
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.innerHTML = `
-                <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-xl font-bold">Book a Service</h3>
-                                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                ${DB.services.map(service => `
-                                    <div class="border rounded-lg p-4 hover:border-purple-500 cursor-pointer" onclick="selectService(${service.id})">
-                                        <img src="${service.image}" alt="${service.name}" class="w-full h-32 object-cover rounded mb-3">
-                                        <h4 class="font-bold">${service.name}</h4>
-                                        <p class="text-gray-600 text-sm mb-2">${service.description}</p>
-                                        <div class="flex justify-between items-center">
-                                            <span class="font-bold text-purple-600">Ksh ${service.price}/month</span>
-                                            <button class="text-purple-600 hover:text-purple-700">
-                                                Select <i class="fas fa-arrow-right ml-1"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // Show notification
+            notification.classList.remove('hidden');
+            notification.classList.add('cart-pulse');
             
-            document.body.appendChild(modal);
+            // In production, add to cart logic here
+            console.log('Added to cart:', productName);
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('hidden');
+                notification.classList.remove('cart-pulse');
+            }, 3000);
         }
 
-        function selectService(serviceId) {
-            const service = DB.services.find(s => s.id === serviceId);
-            if (!service) return;
-
-            if (confirm(`Book ${service.name} for Ksh ${service.price}/month?`)) {
-                // Add service to user
-                const userService = {
-                    id: currentUser.services.length + 1,
-                    type: service.category,
-                    name: service.name,
-                    price: service.price,
-                    status: 'active',
-                    startDate: new Date().toISOString().split('T')[0],
-                    renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                };
-                
-                currentUser.services.push(userService);
-                
-                // Update user in DB
-                const userIndex = DB.users.findIndex(u => u.id === currentUser.id);
-                if (userIndex !== -1) {
-                    DB.users[userIndex] = currentUser;
-                    localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
-                }
-                
-                alert('Service booked successfully!');
-                document.querySelector('.modal-overlay').remove();
-                showDashboard();
-            }
-        }
-
-        function renewService(serviceId) {
-            if (!currentUser) return;
-            
-            const service = currentUser.services.find(s => s.id === serviceId);
-            if (!service) return;
-            
-            if (confirm(`Renew ${service.name} for Ksh ${service.price}?`)) {
-                // Update renewal date
-                service.renewalDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                
-                // Update user in DB
-                const userIndex = DB.users.findIndex(u => u.id === currentUser.id);
-                if (userIndex !== -1) {
-                    DB.users[userIndex] = currentUser;
-                    localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
-                }
-                
-                alert('Service renewed successfully!');
-                showDashboard();
-            }
-        }
-
-        function scrollToServices() {
-            document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function loadLandingPage() {
-            // Already loaded in HTML
+        function viewAllProducts() {
+            alert('Shop catalog - All products would be shown here\n\nContact: writerjackrey@gmail.com for bulk orders');
         }
 
         // Close modals when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.remove();
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                closeModal();
             }
-        };
+        });
 
-        // Export DB for backend compatibility
-        window.getDatabase = function() {
-            return JSON.parse(JSON.stringify(DB));
-        };
+        // Initialize date picker
+        flatpickr("input[type='date']", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+        });
 
-        window.updateDatabase = function(newDB) {
-            DB = newDB;
-            localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
-            localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
-            localStorage.setItem('kingsFiberProducts', JSON.stringify(DB.products));
+        // Add active class to nav links on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('bg-primary-50', 'text-primary-600', 'rounded-lg', 'px-3', 'py-2');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('bg-primary-50', 'text-primary-600', 'rounded-lg', 'px-3', 'py-2');
+                }
+            });
+        });
+
+        // Simple cart functionality
+        let cartItems = [];
+
+        console.log('Kings Fiber Connection - Professional Service Provider');
+        console.log('Contact Emails: writerjackrey@gmail.com, Muhiadaniel278@gmail.com');
+        console.log('Phone: 0113 898 413 | 0717 005 857');
+        
+        // Demo internet client dashboard (would be separate page in production)
+        window.demoInternetDashboard = function() {
+            return {
+                username: 'client001',
+                services: [
+                    {
+                        name: 'Gamer Pro 1Gbps',
+                        status: 'active',
+                        billing: 'Ksh 5,000/month',
+                        renewal: '2024-02-01',
+                        routerPassword: 'SecurePass123',
+                        usage: '350GB/Unlimited'
+                    }
+                ],
+                invoices: [
+                    {
+                        id: 'INV001',
+                        amount: 'Ksh 5,000',
+                        dueDate: '2024-02-01',
+                        status: 'paid'
+                    }
+                ]
+            };
         };
     </script>
 </body>
