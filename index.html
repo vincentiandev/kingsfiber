@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kings Fiber Connection - Complete Service Solutions</title>
+    <title>Kings Fiber Connection - Complete Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -21,1106 +23,1408 @@
         }
     </script>
     <style>
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .dashboard-card {
+            transition: all 0.3s ease;
         }
-        .popular-plan {
-            position: relative;
-            border: 2px solid #7c3aed;
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .popular-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #7c3aed;
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .status-active {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             color: white;
-            padding: 4px 16px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
         }
-        .modal {
+        .status-pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: white;
+        }
+        .status-inactive {
+            background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+            color: white;
+        }
+        .modal-overlay {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
         }
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-        }
-        .unique-feature {
-            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            margin: 2rem 0;
+        .chart-container {
             position: relative;
-            overflow: hidden;
+            height: 300px;
+            width: 100%;
         }
-        .login-panel, .admin-panel {
-            display: none;
-            background: #f1f5f9;
+        .stat-card {
+            background: white;
             border-radius: 12px;
-            padding: 24px;
-            margin: 24px auto;
-            max-width: 500px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .user-list {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .booking-details {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            text-align: left;
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 9999px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-wifi text-purple-600 text-2xl"></i>
-                    <span class="text-2xl font-bold text-gray-900">Kings Fiber Connection</span>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Main Layout -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-gray-900 text-white w-64 min-h-screen p-6 hidden lg:block">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="bg-purple-600 p-2 rounded-lg">
+                    <i class="fas fa-wifi text-xl"></i>
                 </div>
-                <nav class="hidden md:flex space-x-8">
-                    <a href="#internet" class="text-gray-700 hover:text-purple-600 transition-colors">Internet</a>
-                    <a href="#cctv" class="text-gray-700 hover:text-purple-600 transition-colors">CCTV</a>
-                    <a href="#electrical" class="text-gray-700 hover:text-purple-600 transition-colors">Electrical</a>
-                    <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors">Contact</a>
-                </nav>
-                <button onclick="showLoginPanel()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                    Login
-                </button>
+                <div>
+                    <h2 class="text-xl font-bold">Kings Fiber</h2>
+                    <p class="text-gray-400 text-sm">Admin Panel</p>
+                </div>
+            </div>
+            
+            <nav class="space-y-2">
+                <a href="#" onclick="showSection('dashboard')" class="nav-item active flex items-center space-x-3 p-3 rounded-lg bg-purple-600">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" onclick="showSection('bookings')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Bookings</span>
+                    <span id="bookingBadge" class="notification-badge hidden">0</span>
+                </a>
+                <a href="#" onclick="showSection('clients')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
+                    <i class="fas fa-users"></i>
+                    <span>Internet Clients</span>
+                </a>
+                <a href="#" onclick="showSection('billing')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Billing</span>
+                    <span id="dueBadge" class="notification-badge hidden">0</span>
+                </a>
+                <a href="#" onclick="showSection('services')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
+                    <i class="fas fa-cogs"></i>
+                    <span>Services</span>
+                </a>
+                <a href="#" onclick="showSection('reports')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" onclick="showSection('settings')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="mt-auto pt-8 border-t border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold" id="adminName">Admin</p>
+                        <p class="text-gray-400 text-sm">Super Admin</p>
+                    </div>
+                    <button onclick="logout()" class="ml-auto text-gray-400 hover:text-white">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
             </div>
         </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h1 class="text-5xl font-bold mb-6 leading-tight">
-                        Complete Service Solutions
-                    </h1>
-                    <p class="text-xl mb-8 text-purple-100">
-                        Kings Fiber Connection provides Internet, CCTV, Electrical services and more across Kiambu and Nairobi. 
-                        Professional installation and maintenance for ISPs, gamers, offices, and homes.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                            View All Services
+        <!-- Main Content -->
+        <div class="flex-1">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm p-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleSidebar()" class="lg:hidden text-gray-700">
+                            <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
-                            Call Now: 0113898413
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Kings Fiber Connection</h1>
+                            <p class="text-gray-600">Complete Service Solutions Management</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button onclick="toggleNotifications()" class="relative p-2 text-gray-600 hover:text-purple-600">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span id="notificationCount" class="notification-badge hidden">0</span>
+                            </button>
+                            <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+                                <div class="p-4 border-b">
+                                    <h3 class="font-bold">Notifications</h3>
+                                </div>
+                                <div class="max-h-64 overflow-y-auto">
+                                    <!-- Notifications will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden md:block">
+                            <span id="currentDate" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Sections -->
+            <main class="p-6">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
+                        <p class="text-gray-600">Welcome back! Here's what's happening with your business.</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Total Revenue</p>
+                                    <p class="text-3xl font-bold text-gray-900">Ksh <span id="totalRevenue">0</span></p>
+                                </div>
+                                <div class="bg-green-100 p-3 rounded-full">
+                                    <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">This month</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Active Clients</p>
+                                    <p class="text-3xl font-bold text-gray-900" id="activeClients">0</p>
+                                </div>
+                                <div class="bg-blue-100 p-3 rounded-full">
+                                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Internet service subscribers</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Pending Bookings</p>
+                                    <p class="text-3xl font-bold text-gray-900" id="pendingBookings">0</p>
+                                </div>
+                                <div class="bg-yellow-100 p-3 rounded-full">
+                                    <i class="fas fa-calendar-alt text-yellow-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Awaiting confirmation</p>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Due Payments</p>
+                                    <p class="text-3xl font-bold text-gray-900">Ksh <span id="duePayments">0</span></p>
+                                </div>
+                                <div class="bg-red-100 p-3 rounded-full">
+                                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Overdue invoices</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Revenue Trend</h3>
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <!-- Activity items will be populated here -->
+                                <div id="recentActivities"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bookings Section -->
+                <section id="bookings" class="section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-900">Service Bookings</h2>
+                            <p class="text-gray-600">Manage incoming service requests and appointments</p>
+                        </div>
+                        <button onclick="showNewBookingModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-plus mr-2"></i> New Booking
                         </button>
                     </div>
-                </div>
-                <div class="relative">
-                    <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-8 border border-white/30">
-                        <div class="flex justify-center mb-6">
-                            <i class="fas fa-wifi text-white text-3xl mr-4"></i>
-                            <i class="fas fa-video text-red-300 text-3xl mr-4"></i>
-                            <i class="fas fa-bolt text-yellow-300 text-3xl"></i>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 text-center">
+
+                    <!-- Booking Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+                        <div class="flex flex-wrap gap-4">
                             <div>
-                                <div class="text-2xl font-bold">Kiambu</div>
-                                <div class="text-sm">Full Service</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold">Nairobi</div>
-                                <div class="text-sm">Full Service</div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+                                <select id="bookingFilterService" onchange="filterBookings()" class="border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="all">All Services</option>
+                                    <option value="internet">Internet</option>
+                                    <option value="cctv">CCTV</option>
+                                    <option value="electrical">Electrical</option>
+                                </select>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold">Thika</div>
-                                <div class="text-sm">Headquarters</div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="bookingFilterStatus" onchange="filterBookings()" class="border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold">24/7</div>
-                                <div class="text-sm">Support</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Unique Feature Section -->
-    <section class="py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="unique-feature">
-                <div class="relative z-10">
-                    <h2 class="text-3xl font-bold mb-4">🌟 Integrated Smart Security System</h2>
-                    <p class="text-lg mb-6">Our exclusive integrated system combines high-speed fiber internet with advanced CCTV surveillance and smart electrical controls. Monitor your property remotely, receive real-time alerts, and control lighting/power systems all from one intuitive mobile app.</p>
-                    <div class="flex flex-wrap gap-4">
-                        <span class="bg-white/20 px-3 py-1 rounded-full">Remote Monitoring</span>
-                        <span class="bg-white/20 px-3 py-1 rounded-full">AI Motion Detection</span>
-                        <span class="bg-white/20 px-3 py-1 rounded-full">Cloud Storage</span>
-                        <span class="bg-white/20 px-3 py-1 rounded-full">Smart Power Control</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Internet Services Section -->
-    <section id="internet" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Internet Installation Services</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl">
-                        Professional fiber internet installation for ISPs, gamers, offices, and residential customers
-                    </p>
-                </div>
-                <button onclick="showAdminPanel()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
-                    <i class="fas fa-cog mr-2"></i>Admin
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- ISP Package -->
-                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card">
-                    <i class="fas fa-network-wired text-purple-600 text-2xl mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">ISP Solutions</h3>
-                    <div class="text-3xl font-bold text-purple-600 mb-4">10 Gbps</div>
-                    <div class="text-2xl font-bold mb-6">Custom Pricing</div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Dedicated Infrastructure</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Redundant Connections</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">SLA Guaranteed</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">24/7 Monitoring</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" onclick="openBookingModal('ISP Solutions')">
-                        Book Installation
-                    </button>
-                </div>
-
-                <!-- Gamer Package -->
-                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card popular-plan">
-                    <div class="popular-badge">GAMER SPECIAL</div>
-                    <i class="fas fa-gamepad text-purple-600 text-2xl mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Gamer Pro</h3>
-                    <div class="text-3xl font-bold text-purple-600 mb-4">1 Gbps</div>
-                    <div class="text-2xl font-bold mb-6">Ksh 5,000/month</div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Ultra Low Latency</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Gaming Router</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">DDoS Protection</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Priority Support</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors" onclick="openBookingModal('Gamer Pro')">
-                        Book Installation
-                    </button>
-                </div>
-
-                <!-- Office Package -->
-                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card">
-                    <i class="fas fa-building text-purple-600 text-2xl mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Office Business</h3>
-                    <div class="text-3xl font-bold text-purple-600 mb-4">500 Mbps</div>
-                    <div class="text-2xl font-bold mb-6">Ksh 7,500/month</div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Multiple Static IPs</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">VoIP Ready</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Cloud Integration</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Backup Connection</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" onclick="openBookingModal('Office Business')">
-                        Book Installation
-                    </button>
-                </div>
-
-                <!-- Home Package -->
-                <div class="bg-gray-50 p-6 rounded-xl hover:shadow-lg transition-shadow service-card">
-                    <i class="fas fa-home text-purple-600 text-2xl mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Home Premium</h3>
-                    <div class="text-3xl font-bold text-purple-600 mb-4">200 Mbps</div>
-                    <div class="text-2xl font-bold mb-6">Ksh 3,500/month</div>
-                    <ul class="space-y-3 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Unlimited Data</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Wi-Fi 6 Router</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Smart Home Ready</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Free Installation</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors" onclick="openBookingModal('Home Premium')">
-                        Book Installation
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CCTV Services Section -->
-    <section id="cctv" class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">CCTV Installation & Maintenance</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl">
-                        Professional CCTV security systems for homes, businesses, and commercial properties
-                    </p>
-                </div>
-                <button onclick="showAdminPanel()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
-                    <i class="fas fa-cog mr-2"></i>Admin
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Basic CCTV -->
-                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
-                    <i class="fas fa-video text-red-500 text-2xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Basic Home Security</h3>
-                    <div class="text-2xl font-bold text-red-600 mb-4">Ksh 15,000</div>
-                    <ul class="space-y-2 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">4 HD Cameras</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">1TB DVR</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Night Vision</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Mobile App Access</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">1 Year Warranty</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors" onclick="openBookingModal('Basic Home Security')">
-                        Book Installation
-                    </button>
-                </div>
-
-                <!-- Business CCTV -->
-                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
-                    <i class="fas fa-building text-red-500 text-2xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Business Security Pro</h3>
-                    <div class="text-2xl font-bold text-red-600 mb-4">Ksh 35,000</div>
-                    <ul class="space-y-2 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">8 Full HD Cameras</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">2TB NVR</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">AI Motion Detection</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Cloud Backup</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Remote Monitoring</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">2 Year Warranty</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors" onclick="openBookingModal('Business Security Pro')">
-                        Book Installation
-                    </button>
-                </div>
-
-                <!-- Enterprise CCTV -->
-                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
-                    <i class="fas fa-industry text-red-500 text-2xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Enterprise Security</h3>
-                    <div class="text-2xl font-bold text-red-600 mb-4">Ksh 75,000+</div>
-                    <ul class="space-y-2 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">16+ 4K Cameras</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">RAID Storage System</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Facial Recognition</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">License Plate Recognition</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">24/7 Monitoring Center</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Custom Integration</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors" onclick="openBookingModal('Enterprise Security')">
-                        Book Installation
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Electrical Services Section -->
-    <section id="electrical" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Electrical Services & Installation</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl">
-                        Professional electrical installation, maintenance, and emergency services for all property types
-                    </p>
-                </div>
-                <button onclick="showAdminPanel()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
-                    <i class="fas fa-cog mr-2"></i>Admin
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                <!-- Residential -->
-                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
-                    <i class="fas fa-home text-yellow-500 text-2xl mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Residential Electrical</h3>
-                    <p class="text-gray-600 mb-6">Complete electrical solutions for homes with certified technicians and quality materials</p>
-                    <ul class="space-y-2">
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">New electrical installations</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Lighting fixture installation</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Power outlet upgrades</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Electrical panel upgrades</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Generator installation</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Smart home electrical setup</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Emergency electrical repairs</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Commercial -->
-                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow service-card">
-                    <i class="fas fa-building text-yellow-500 text-2xl mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Commercial Electrical</h3>
-                    <p class="text-gray-600 mb-6">Professional electrical services for businesses, offices, and commercial properties</p>
-                    <ul class="space-y-2">
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Commercial electrical installations</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Office lighting systems</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Industrial power distribution</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">UPS and backup power systems</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Electrical safety inspections</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">Energy efficiency audits</span>
-                        </li>
-                        <li class="flex items-start space-x-2">
-                            <i class="fas fa-bolt text-yellow-500 mt-1"></i>
-                            <span class="text-gray-700">24/7 emergency response</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Electrical Packages -->
-            <div class="text-center mb-8">
-                <h3 class="text-3xl font-bold text-gray-900 mb-4">Electrical Service Packages</h3>
-                <p class="text-lg text-gray-600">Affordable bundled packages for common electrical needs</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Basic Home Setup -->
-                <div class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow service-card">
-                    <i class="fas fa-lightbulb text-yellow-500 text-2xl mb-4"></i>
-                    <h4 class="text-xl font-bold text-gray-900 mb-3">Basic Home Setup</h4>
-                    <div class="text-2xl font-bold text-yellow-600 mb-4">Ksh 8,000</div>
-                    <ul class="space-y-2 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">5 Power outlets</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">3 Light fixtures</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Basic wiring</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Safety inspection</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">30-day warranty</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg font-semibold hover:bg-yellow-600 transition-colors" onclick="openBookingModal('Basic Home Setup')">
-                        Book Service
-                    </button>
-                </div>
-
-                <!-- Complete Home Wiring -->
-                <div class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow service-card">
-                    <i class="fas fa-lightbulb text-yellow-500 text-2xl mb-4"></i>
-                    <h4 class="text-xl font-bold text-gray-900 mb-3">Complete Home Wiring</h4>
-                    <div class="text-2xl font-bold text-yellow-600 mb-4">Ksh 25,000</div>
-                    <ul class="space-y-2 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Full house wiring</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">15+ outlets</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">10+ light points</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">DB board installation</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Certificate of compliance</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">6-month warranty</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg font-semibold hover:bg-yellow-600 transition-colors" onclick="openBookingModal('Complete Home Wiring')">
-                        Book Service
-                    </button>
-                </div>
-
-                <!-- Office Electrical Package -->
-                <div class="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow service-card">
-                    <i class="fas fa-lightbulb text-yellow-500 text-2xl mb-4"></i>
-                    <h4 class="text-xl font-bold text-gray-900 mb-3">Office Electrical Package</h4>
-                    <div class="text-2xl font-bold text-yellow-600 mb-4">Ksh 45,000</div>
-                    <ul class="space-y-2 mb-6">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Commercial-grade wiring</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">25+ power points</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">LED lighting system</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Emergency lighting</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Fire alarm integration</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">1-year warranty</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span class="text-gray-700">Free consultation</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg font-semibold hover:bg-yellow-600 transition-colors" onclick="openBookingModal('Office Electrical Package')">
-                        Book Service
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Coverage Section -->
-    <section id="coverage" class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Service Coverage Areas</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    We provide comprehensive services across Central Kenya
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div class="bg-white p-8 rounded-xl">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Primary Coverage Areas</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-green-100 p-2 rounded-full mt-1">
-                                <i class="fas fa-check-circle text-green-600"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Nairobi</h4>
-                                <p class="text-gray-600">Full coverage for all services across all suburbs and business districts</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-green-100 p-2 rounded-full mt-1">
-                                <i class="fas fa-check-circle text-green-600"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Kiambu County</h4>
-                                <p class="text-gray-600">Complete service including Kiambu Town, Kikuyu, Limuru, Ruiru, Thika, and surrounding areas</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-blue-100 p-2 rounded-full mt-1">
-                                <i class="fas fa-globe text-blue-600"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Expanding Soon</h4>
-                                <p class="text-gray-600">Murang'a and Machakos counties coming in Q2 2026</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                                <input type="text" id="bookingDateRange" placeholder="Select date range" class="border border-gray-300 rounded-lg px-3 py-2">
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="bg-white p-8 rounded-xl">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Why Choose Kings Fiber Connection?</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-purple-100 p-2 rounded-full mt-1">
-                                <i class="fas fa-tools text-purple-600"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Complete Solutions</h4>
-                                <p class="text-gray-600">One company for internet, CCTV, and electrical services</p>
+
+                    <!-- Bookings Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- Bookings will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Internet Clients Section -->
+                <section id="clients" class="section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-900">Internet Clients</h2>
+                            <p class="text-gray-600">Manage internet service subscribers and accounts</p>
+                        </div>
+                        <button onclick="showNewClientModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-user-plus mr-2"></i> Add New Client
+                        </button>
+                    </div>
+
+                    <!-- Client Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-gray-500">Total Clients</p>
+                            <p class="text-2xl font-bold" id="totalClients">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-gray-500">Active</p>
+                            <p class="text-2xl font-bold text-green-600" id="activeInternetClients">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-gray-500">Due Renewal</p>
+                            <p class="text-2xl font-bold text-yellow-600" id="dueRenewalClients">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                            <p class="text-gray-500">Inactive</p>
+                            <p class="text-2xl font-bold text-red-600" id="inactiveClients">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Clients Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Connection Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Renewal Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- Clients will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Billing Section -->
+                <section id="billing" class="section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-900">Billing System</h2>
+                            <p class="text-gray-600">Automated billing and payment tracking</p>
+                        </div>
+                        <button onclick="generateInvoices()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-file-invoice-dollar mr-2"></i> Generate Monthly Invoices
+                        </button>
+                    </div>
+
+                    <!-- Billing Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">This Month's Revenue</h3>
+                            <p class="text-3xl font-bold text-gray-900">Ksh <span id="monthlyRevenue">0</span></p>
+                            <div class="flex items-center mt-2">
+                                <span id="revenueChange" class="text-sm"></span>
                             </div>
                         </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-red-100 p-2 rounded-full mt-1">
-                                <i class="fas fa-video text-red-600"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Integrated Security</h4>
-                                <p class="text-gray-600">CCTV systems that integrate with your internet and electrical systems</p>
-                            </div>
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Pending Payments</h3>
+                            <p class="text-3xl font-bold text-yellow-600">Ksh <span id="pendingPayments">0</span></p>
+                            <p class="text-sm text-gray-500 mt-2"><span id="pendingInvoices">0</span> invoices pending</p>
                         </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-green-100 p-2 rounded-full mt-1">
-                                <i class="fas fa-shield-alt text-green-600"></i>
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Overdue Payments</h3>
+                            <p class="text-3xl font-bold text-red-600">Ksh <span id="overduePayments">0</span></p>
+                            <p class="text-sm text-gray-500 mt-2"><span id="overdueInvoices">0</span> invoices overdue</p>
+                        </div>
+                    </div>
+
+                    <!-- Invoices Table -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                        <div class="px-6 py-4 border-b">
+                            <h3 class="text-lg font-bold">Recent Invoices</h3>
+                        </div>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice #</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTable" class="bg-white divide-y divide-gray-200">
+                                <!-- Invoices will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Auto-Billing Settings -->
+                    <div class="stat-card">
+                        <h3 class="text-lg font-bold mb-4">Auto-Billing Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium">Automatic Invoice Generation</p>
+                                    <p class="text-sm text-gray-500">Generate invoices automatically on renewal dates</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="autoGenerate" checked>
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">Quality Assurance</h4>
-                                <p class="text-gray-600">All work comes with warranties and compliance certificates</p>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium">Payment Reminders</p>
+                                    <p class="text-sm text-gray-500">Send automatic reminders before due dates</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="autoReminders" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium">Late Payment Penalties</p>
+                                    <p class="text-sm text-gray-500">Apply penalties for overdue payments</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="latePenalties" checked>
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold mb-4">Get Complete Solutions Today</h2>
-                <p class="text-xl text-purple-100 max-w-3xl mx-auto">
-                    Contact us for any of our services! Serving Kiambu and Nairobi areas.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                    <i class="fas fa-phone text-2xl mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">Call Us</h3>
-                    <p class="text-purple-100 text-lg">0113 898 413</p>
-                    <p class="text-purple-100 text-lg">0717 005 857</p>
-                    <p class="text-purple-100 mt-2">Available 8AM - 8PM Daily</p>
-                    <p class="text-purple-100">24/7 Emergency Services</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                    <i class="fas fa-envelope text-2xl mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">Email Us</h3>
-                    <p class="text-purple-100">Muhiadaniel278@gmail.com</p>
-                    <p class="text-purple-100">writerjackrey@gmail.com</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                    <i class="fas fa-map-marker-alt text-2xl mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">Location</h3>
-                    <p class="text-purple-100">Thika, Kenya</p>
-                    <p class="text-purple-100">Serving Kiambu & Nairobi</p>
-                    <p class="text-purple-100">On-site consultations available</p>
-                </div>
-            </div>
-            
-            <div class="mt-12 text-center">
-                <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
-                    Schedule Free Consultation
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <i class="fas fa-wifi text-purple-400 text-xl"></i>
-                        <span class="text-xl font-bold">Kings Fiber Connection</span>
+                <!-- Services Section -->
+                <section id="services" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900">Service Management</h2>
+                        <p class="text-gray-600">Configure internet plans, CCTV packages, and electrical services</p>
                     </div>
-                    <p class="text-gray-400">
-                        Complete service provider for internet, CCTV, and electrical solutions in Central Kenya.
-                    </p>
-                    <div class="mt-4">
-                        <p class="text-gray-400">📞 0113 898 413</p>
-                        <p class="text-gray-400">📱 0717 005 857</p>
-                        <p class="text-gray-400">📍 Thika, Kenya</p>
+
+                    <!-- Internet Plans -->
+                    <div class="stat-card mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Internet Plans</h3>
+                            <button onclick="showNewPlanModal()" class="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i> Add Plan
+                            </button>
+                        </div>
+                        <div id="internetPlans" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Plans will be populated here -->
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Internet Services</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#internet" class="hover:text-white transition-colors">ISP Solutions</a></li>
-                        <li><a href="#internet" class="hover:text-white transition-colors">Gamer Internet</a></li>
-                        <li><a href="#internet" class="hover:text-white transition-colors">Office Internet</a></li>
-                        <li><a href="#internet" class="hover:text-white transition-colors">Home Internet</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Security Services</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#cctv" class="hover:text-white transition-colors">Home CCTV</a></li>
-                        <li><a href="#cctv" class="hover:text-white transition-colors">Business CCTV</a></li>
-                        <li><a href="#cctv" class="hover:text-white transition-colors">Enterprise Security</a></li>
-                        <li><a href="#cctv" class="hover:text-white transition-colors">Maintenance</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Electrical Services</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#electrical" class="hover:text-white transition-colors">Residential</a></li>
-                        <li><a href="#electrical" class="hover:text-white transition-colors">Commercial</a></li>
-                        <li><a href="#contact" class="hover:text-white transition-colors">Emergency Repairs</a></li>
-                        <li><a href="#electrical" class="hover:text-white transition-colors">Maintenance</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2026 Kings Fiber Connection. All rights reserved. | Licensed Contractor | Thika, Kenya</p>
-            </div>
-        </div>
-    </footer>
 
-    <!-- Login Panel -->
-    <div id="loginPanel" class="login-panel">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">User Login</h3>
-        <form id="loginForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <input type="text" id="loginUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter username">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="loginPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter password">
-            </div>
-            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">Login</button>
-            <button type="button" onclick="toggleLoginPanel()" class="w-full mt-2 text-gray-600">Cancel</button>
-        </form>
-    </div>
+                    <!-- CCTV Packages -->
+                    <div class="stat-card mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">CCTV Packages</h3>
+                            <button onclick="showNewCCTVModal()" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i> Add Package
+                            </button>
+                        </div>
+                        <div id="cctvPackages" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Packages will be populated here -->
+                        </div>
+                    </div>
 
-    <!-- Admin Panel -->
-    <div id="adminPanel" class="admin-panel">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Admin Login</h3>
-        <form id="adminLoginForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="adminEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="writerjackrey@gmail.com">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <input type="text" id="adminUsername" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="ADMIN">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="adminPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="danpe">
-            </div>
-            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">Admin Login</button>
-            <button type="button" onclick="toggleAdminPanel()" class="w-full mt-2 text-gray-600">Cancel</button>
-        </form>
-    </div>
+                    <!-- Electrical Services -->
+                    <div class="stat-card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Electrical Services</h3>
+                            <button onclick="showNewElectricalModal()" class="bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i> Add Service
+                            </button>
+                        </div>
+                        <div id="electricalServices" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Services will be populated here -->
+                        </div>
+                    </div>
+                </section>
 
-    <!-- Admin Dashboard -->
-    <div id="adminDashboard" class="admin-panel" style="display:none;">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800">Admin Dashboard</h3>
-            <button onclick="logoutAdmin()" class="text-red-600 text-sm">Logout</button>
-        </div>
-        
-        <h4 class="font-bold mb-2">Create New User Account</h4>
-        <form id="createUserForm" class="space-y-3 mb-4">
-            <input type="text" id="newUsername" placeholder="Username" class="w-full px-2 py-1 border rounded text-sm">
-            <input type="password" id="newPassword" placeholder="Password" class="w-full px-2 py-1 border rounded text-sm">
-            <select id="userRole" class="w-full px-2 py-1 border rounded text-sm">
-                <option value="customer">Customer</option>
-                <option value="technician">Technician</option>
-                <option value="support">Support Staff</option>
-            </select>
-            <button type="submit" class="w-full bg-green-600 text-white text-sm py-1 rounded">Create User</button>
-        </form>
+                <!-- Reports Section -->
+                <section id="reports" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900">Business Reports</h2>
+                        <p class="text-gray-600">Analytics and insights for better decision making</p>
+                    </div>
 
-        <h4 class="font-bold mb-2">Manage Users</h4>
-        <div id="userList" class="user-list">
-            <p class="text-gray-500 text-sm">No users created yet.</p>
+                    <!-- Report Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+                        <div class="flex flex-wrap gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+                                <select id="reportType" class="border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="revenue">Revenue Report</option>
+                                    <option value="clients">Client Growth</option>
+                                    <option value="services">Service Performance</option>
+                                    <option value="billing">Billing Status</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                                <select id="reportPeriod" class="border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="monthly">This Month</option>
+                                    <option value="quarterly">This Quarter</option>
+                                    <option value="yearly">This Year</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="generateReport()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Content -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Revenue Breakdown</h3>
+                            <div class="chart-container">
+                                <canvas id="reportChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Key Metrics</h3>
+                            <div class="space-y-4" id="keyMetrics">
+                                <!-- Metrics will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Options -->
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <button onclick="exportPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                            <i class="fas fa-file-pdf mr-2"></i> Export PDF
+                        </button>
+                        <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-file-excel mr-2"></i> Export Excel
+                        </button>
+                        <button onclick="printReport()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-print mr-2"></i> Print Report
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="section hidden">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900">System Settings</h2>
+                        <p class="text-gray-600">Configure system preferences and user management</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Company Settings -->
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Company Information</h3>
+                            <form id="companyForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                                    <input type="text" id="companyName" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="Kings Fiber Connection">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+                                    <input type="text" id="companyPhone" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="0113 898 413">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+                                    <input type="email" id="companyEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="writerjackrey@gmail.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                    <input type="text" id="companyLocation" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="Thika, Kenya">
+                                </div>
+                                <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Billing Settings -->
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">Billing Configuration</h3>
+                            <form id="billingForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                                    <select id="currency" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                        <option value="KES">Kenyan Shilling (KES)</option>
+                                        <option value="USD">US Dollar (USD)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
+                                    <input type="number" id="paymentTerms" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="15" placeholder="Days">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Late Fee Percentage</label>
+                                    <input type="number" id="lateFee" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="5" placeholder="%">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tax Rate</label>
+                                    <input type="number" id="taxRate" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="16" placeholder="%">
+                                </div>
+                                <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
+                                    Save Configuration
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- User Management -->
+                        <div class="stat-card">
+                            <h3 class="text-lg font-bold mb-4">User Management</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-medium">Admin Users</p>
+                                        <p class="text-sm text-gray-500">System administrators</p>
+                                    </div>
+                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">2 Users</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-medium">Technicians</p>
+                                        <p class="text-sm text-gray-500">Field service technicians</p>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">5 Users</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-medium">Support Staff</p>
+                                        <p class="text-sm text-gray-500">Customer support</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">3 Users</span>
+                                </div>
+                                <button onclick="showNewUserModal()" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+                                    <i class="fas fa-user-plus mr-2"></i> Add New User
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
-    <!-- Booking Modal -->
-    <div id="bookingModal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-4">Book Your Service</h2>
-            <form id="bookingForm">
-                <input type="hidden" id="serviceType" name="serviceType">
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="name">Full Name</label>
-                    <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="location">Location/Area</label>
-                    <input type="text" id="location" name="location" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="e.g., Westlands, Nairobi">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2" for="message">Additional Details</label>
-                    <textarea id="message" name="message" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Any specific requirements or questions?"></textarea>
-                </div>
-                <div class="flex justify-between">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Submit Booking</button>
-                </div>
-            </form>
-        </div>
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay">
+        <!-- Modals will be inserted here -->
     </div>
 
-    <!-- Success Modal with Contact Info -->
-    <div id="successModal" class="modal">
-        <div class="modal-content">
-            <div class="text-green-500 text-4xl mb-4">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2 class="text-2xl font-bold mb-4">Booking Successful!</h2>
-            <p class="text-gray-700 mb-6">Thank you for booking with Kings Fiber Connection. Your details have been forwarded to our team.</p>
-            
-            <div class="booking-details">
-                <h3 class="font-bold mb-2">Your Booking Details:</h3>
-                <p><strong>Service:</strong> <span id="bookingService"></span></p>
-                <p><strong>Name:</strong> <span id="bookingName"></span></p>
-                <p><strong>Phone:</strong> <span id="bookingPhone"></span></p>
-                <p><strong>Email:</strong> <span id="bookingEmail"></span></p>
-                <p><strong>Location:</strong> <span id="bookingLocation"></span></p>
-            </div>
-            
-            <div class="bg-gray-100 p-4 rounded-lg mt-6">
-                <h3 class="font-bold text-lg mb-2">Contact Us Directly:</h3>
-                <p class="mb-1"><i class="fas fa-phone mr-2"></i> <strong>0113 898 413</strong></p>
-                <p class="mb-1"><i class="fas fa-mobile-alt mr-2"></i> <strong>0717 005 857</strong></p>
-                <p class="mb-1"><i class="fas fa-envelope mr-2"></i> <strong>writerjackrey@gmail.com</strong></p>
-                <p><i class="fas fa-map-marker-alt mr-2"></i> Thika, Kenya</p>
-            </div>
-            
-            <button onclick="closeSuccessModal()" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 mt-4">Close</button>
-        </div>
-    </div>
-
+    <!-- Charts.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
-        // Simulated user database
-        let users = [];
-        let isAdminLoggedIn = false;
+        // Initialize date picker
+        flatpickr("#bookingDateRange", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+        });
 
-        // DOM Elements
-        const loginPanel = document.getElementById('loginPanel');
-        const adminPanel = document.getElementById('adminPanel');
-        const adminDashboard = document.getElementById('adminDashboard');
+        // Global Data Stores
+        let bookings = [
+            {
+                id: 'BK001',
+                client: 'John Doe',
+                service: 'Internet - Gamer Pro',
+                date: '2024-01-15',
+                amount: 5000,
+                status: 'pending',
+                phone: '0712345678',
+                email: 'john@example.com',
+                location: 'Nairobi'
+            }
+        ];
 
-        // Show login panel
-        function showLoginPanel() {
-            loginPanel.style.display = 'block';
+        let internetClients = [
+            {
+                id: 'CL001',
+                name: 'Jane Smith',
+                plan: 'Gamer Pro - 1 Gbps',
+                price: 5000,
+                location: 'Kiambu',
+                connectionDate: '2024-01-01',
+                renewalDate: '2024-02-01',
+                status: 'active',
+                phone: '0712345679',
+                email: 'jane@example.com'
+            }
+        ];
+
+        let invoices = [
+            {
+                id: 'INV001',
+                client: 'Jane Smith',
+                amount: 5000,
+                dueDate: '2024-02-01',
+                status: 'paid',
+                service: 'Internet - Gamer Pro'
+            }
+        ];
+
+        let notifications = [];
+        let currentUser = { name: 'Admin', role: 'super_admin' };
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            updateStats();
+            updateBookingsTable();
+            updateClientsTable();
+            updateInvoicesTable();
+            updateDate();
+            loadCharts();
+            checkNotifications();
         }
 
-        function toggleLoginPanel() {
-            loginPanel.style.display = 'none';
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
         }
 
-        function toggleAdminPanel() {
-            adminPanel.style.display = 'none';
+        function updateStats() {
+            // Calculate stats
+            const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
+            const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+            const activeClients = internetClients.filter(c => c.status === 'active').length;
+            const duePayments = invoices.filter(i => i.status === 'pending').reduce((sum, inv) => sum + inv.amount, 0);
+
+            // Update UI
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString();
+            document.getElementById('pendingBookings').textContent = pendingBookings;
+            document.getElementById('activeClients').textContent = activeClients;
+            document.getElementById('duePayments').textContent = duePayments.toLocaleString();
+
+            // Update badges
+            updateBadges(pendingBookings, invoices.filter(i => i.status === 'pending').length);
+        }
+
+        function updateBadges(pendingBookings, pendingInvoices) {
+            const bookingBadge = document.getElementById('bookingBadge');
+            const dueBadge = document.getElementById('dueBadge');
+            const notificationBadge = document.getElementById('notificationCount');
+
+            if (pendingBookings > 0) {
+                bookingBadge.textContent = pendingBookings;
+                bookingBadge.classList.remove('hidden');
+            } else {
+                bookingBadge.classList.add('hidden');
+            }
+
+            if (pendingInvoices > 0) {
+                dueBadge.textContent = pendingInvoices;
+                dueBadge.classList.remove('hidden');
+            } else {
+                dueBadge.classList.add('hidden');
+            }
+
+            if (notifications.length > 0) {
+                notificationBadge.textContent = notifications.length;
+                notificationBadge.classList.remove('hidden');
+            } else {
+                notificationBadge.classList.add('hidden');
+            }
+        }
+
+        function updateBookingsTable() {
+            const table = document.getElementById('bookingsTable');
+            table.innerHTML = '';
+
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${booking.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div>${booking.client}</div>
+                        <div class="text-sm text-gray-500">${booking.phone}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">${booking.service}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${booking.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">Ksh ${booking.amount.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(booking.status)}">
+                            ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewBooking('${booking.id}')" class="text-blue-600 hover:text-blue-900 mr-2">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="editBooking('${booking.id}')" class="text-green-600 hover:text-green-900 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="confirmBooking('${booking.id}')" class="text-purple-600 hover:text-purple-900 mr-2">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button onclick="deleteBooking('${booking.id}')" class="text-red-600 hover:text-red-900">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function updateClientsTable() {
+            const table = document.getElementById('clientsTable');
+            table.innerHTML = '';
+
+            internetClients.forEach(client => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${client.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div>${client.name}</div>
+                        <div class="text-sm text-gray-500">${client.phone}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">${client.plan}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${client.location}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${client.connectionDate}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${client.renewalDate}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(client.status)}">
+                            ${client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewClient('${client.id}')" class="text-blue-600 hover:text-blue-900 mr-2">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="editClient('${client.id}')" class="text-green-600 hover:text-green-900 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="sendInvoice('${client.id}')" class="text-purple-600 hover:text-purple-900 mr-2">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+
+            // Update client stats
+            updateClientStats();
+        }
+
+        function updateClientStats() {
+            const totalClients = internetClients.length;
+            const activeClients = internetClients.filter(c => c.status === 'active').length;
+            const dueRenewal = internetClients.filter(c => {
+                const renewal = new Date(c.renewalDate);
+                const today = new Date();
+                const daysDiff = Math.ceil((renewal - today) / (1000 * 60 * 60 * 24));
+                return daysDiff <= 7 && daysDiff >= 0;
+            }).length;
+            const inactiveClients = internetClients.filter(c => c.status === 'inactive').length;
+
+            document.getElementById('totalClients').textContent = totalClients;
+            document.getElementById('activeInternetClients').textContent = activeClients;
+            document.getElementById('dueRenewalClients').textContent = dueRenewal;
+            document.getElementById('inactiveClients').textContent = inactiveClients;
+        }
+
+        function updateInvoicesTable() {
+            const table = document.getElementById('invoicesTable');
+            table.innerHTML = '';
+
+            invoices.forEach(invoice => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${invoice.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${invoice.client}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">Ksh ${invoice.amount.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${invoice.dueDate}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(invoice.status)}">
+                            ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewInvoice('${invoice.id}')" class="text-blue-600 hover:text-blue-900 mr-2">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="markAsPaid('${invoice.id}')" class="text-green-600 hover:text-green-900 mr-2">
+                            <i class="fas fa-check-circle"></i>
+                        </button>
+                        <button onclick="sendReminder('${invoice.id}')" class="text-yellow-600 hover:text-yellow-900 mr-2">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+
+            updateBillingStats();
+        }
+
+        function updateBillingStats() {
+            const monthlyRevenue = invoices
+                .filter(i => i.status === 'paid' && new Date().getMonth() === new Date(i.dueDate).getMonth())
+                .reduce((sum, inv) => sum + inv.amount, 0);
+
+            const pendingPayments = invoices
+                .filter(i => i.status === 'pending')
+                .reduce((sum, inv) => sum + inv.amount, 0);
+
+            const pendingInvoices = invoices.filter(i => i.status === 'pending').length;
+
+            const overduePayments = invoices
+                .filter(i => {
+                    if (i.status !== 'pending') return false;
+                    const dueDate = new Date(i.dueDate);
+                    const today = new Date();
+                    return dueDate < today;
+                })
+                .reduce((sum, inv) => sum + inv.amount, 0);
+
+            const overdueInvoices = invoices.filter(i => {
+                if (i.status !== 'pending') return false;
+                const dueDate = new Date(i.dueDate);
+                const today = new Date();
+                return dueDate < today;
+            }).length;
+
+            document.getElementById('monthlyRevenue').textContent = monthlyRevenue.toLocaleString();
+            document.getElementById('pendingPayments').textContent = pendingPayments.toLocaleString();
+            document.getElementById('pendingInvoices').textContent = pendingInvoices;
+            document.getElementById('overduePayments').textContent = overduePayments.toLocaleString();
+            document.getElementById('overdueInvoices').textContent = overdueInvoices;
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'active':
+                case 'paid':
+                case 'completed':
+                case 'confirmed':
+                    return 'bg-green-100 text-green-800';
+                case 'pending':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'inactive':
+                case 'cancelled':
+                    return 'bg-red-100 text-red-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('bg-purple-600');
+                item.classList.add('hover:bg-gray-800');
+            });
+
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('bg-purple-600');
+            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.remove('hover:bg-gray-800');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notificationPanel').classList.toggle('hidden');
+        }
+
+        function showNewBookingModal() {
+            const modal = document.getElementById('modalOverlay');
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4">New Service Booking</h3>
+                        <form id="newBookingForm" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
+                                    <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <input type="tel" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                        <option value="">Select Service</option>
+                                        <option value="internet">Internet Installation</option>
+                                        <option value="cctv">CCTV Installation</option>
+                                        <option value="electrical">Electrical Services</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Service Details</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                    <option value="">Select Package</option>
+                                    <option value="gamer">Gamer Pro - 1 Gbps</option>
+                                    <option value="home">Home Premium - 200 Mbps</option>
+                                    <option value="office">Office Business - 500 Mbps</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+                                    <input type="date" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Estimated Amount (Ksh)</label>
+                                    <input type="number" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
+                                <textarea rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                        <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:text-gray-900">Cancel</button>
+                        <button onclick="saveNewBooking()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Save Booking</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showNewClientModal() {
+            const modal = document.getElementById('modalOverlay');
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4">New Internet Client</h3>
+                        <form id="newClientForm" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="clientName" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <input type="tel" id="clientPhone" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                    <input type="email" id="clientEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                                    <input type="text" id="clientId" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Physical Address</label>
+                                <textarea rows="2" id="clientAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" required></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Internet Plan</label>
+                                    <select id="clientPlan" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                        <option value="">Select Plan</option>
+                                        <option value="gamer">Gamer Pro - 1 Gbps (Ksh 5,000)</option>
+                                        <option value="home">Home Premium - 200 Mbps (Ksh 3,500)</option>
+                                        <option value="office">Office Business - 500 Mbps (Ksh 7,500)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Connection Date</label>
+                                    <input type="date" id="connectionDate" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Router MAC Address</label>
+                                    <input type="text" id="routerMac" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="AA:BB:CC:DD:EE:FF">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
+                                    <input type="text" id="ipAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="192.168.1.1">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                                <textarea rows="2" id="clientNotes" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                        <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:text-gray-900">Cancel</button>
+                        <button onclick="saveNewClient()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Save Client</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function saveNewClient() {
+            // Generate unique client ID
+            const clientId = 'CL' + String(internetClients.length + 1).padStart(3, '0');
+            
+            const newClient = {
+                id: clientId,
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value,
+                plan: document.getElementById('clientPlan').options[document.getElementById('clientPlan').selectedIndex].text,
+                location: document.getElementById('clientAddress').value,
+                connectionDate: document.getElementById('connectionDate').value,
+                renewalDate: calculateRenewalDate(document.getElementById('connectionDate').value),
+                status: 'active'
+            };
+
+            internetClients.push(newClient);
+            updateClientsTable();
+            updateStats();
+            
+            // Create initial invoice
+            const invoiceId = 'INV' + String(invoices.length + 1).padStart(3, '0');
+            const planPrice = getPlanPrice(newClient.plan);
+            
+            invoices.push({
+                id: invoiceId,
+                client: newClient.name,
+                amount: planPrice,
+                dueDate: newClient.renewalDate,
+                status: 'pending',
+                service: newClient.plan
+            });
+
+            addNotification(`New client ${newClient.name} added`, 'success');
+            closeModal();
+        }
+
+        function calculateRenewalDate(connectionDate) {
+            const date = new Date(connectionDate);
+            date.setMonth(date.getMonth() + 1);
+            return date.toISOString().split('T')[0];
+        }
+
+        function getPlanPrice(planText) {
+            if (planText.includes('5,000')) return 5000;
+            if (planText.includes('3,500')) return 3500;
+            if (planText.includes('7,500')) return 7500;
+            return 0;
+        }
+
+        function generateInvoices() {
+            const today = new Date();
+            const newInvoices = [];
+
+            internetClients.forEach(client => {
+                if (client.status === 'active') {
+                    const renewalDate = new Date(client.renewalDate);
+                    if (renewalDate <= today) {
+                        const invoiceId = 'INV' + String(invoices.length + newInvoices.length + 1).padStart(3, '0');
+                        const planPrice = getPlanPrice(client.plan);
+                        
+                        newInvoices.push({
+                            id: invoiceId,
+                            client: client.name,
+                            amount: planPrice,
+                            dueDate: new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0],
+                            status: 'pending',
+                            service: client.plan
+                        });
+
+                        // Update client renewal date
+                        client.renewalDate = new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0];
+                    }
+                }
+            });
+
+            if (newInvoices.length > 0) {
+                invoices.push(...newInvoices);
+                updateInvoicesTable();
+                updateClientsTable();
+                addNotification(`Generated ${newInvoices.length} new invoices`, 'success');
+            } else {
+                addNotification('No invoices to generate this month', 'info');
+            }
+        }
+
+        function viewClient(clientId) {
+            const client = internetClients.find(c => c.id === clientId);
+            if (!client) return;
+
+            const modal = document.getElementById('modalOverlay');
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-4">Client Details - ${client.id}</h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Name</p>
+                                    <p class="font-medium">${client.name}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Phone</p>
+                                    <p class="font-medium">${client.phone}</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Email</p>
+                                    <p class="font-medium">${client.email || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Location</p>
+                                    <p class="font-medium">${client.location}</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Plan</p>
+                                    <p class="font-medium">${client.plan}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Status</p>
+                                    <p class="font-medium">
+                                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(client.status)}">
+                                            ${client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Connection Date</p>
+                                    <p class="font-medium">${client.connectionDate}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Renewal Date</p>
+                                    <p class="font-medium">${client.renewalDate}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
+                        <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:text-gray-900">Close</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function markAsPaid(invoiceId) {
+            const invoice = invoices.find(i => i.id === invoiceId);
+            if (invoice) {
+                invoice.status = 'paid';
+                updateInvoicesTable();
+                updateStats();
+                addNotification(`Invoice ${invoiceId} marked as paid`, 'success');
+            }
+        }
+
+        function loadCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue (Ksh)',
+                        data: [120000, 190000, 150000, 250000, 220000, 300000],
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Report Chart
+            const reportCtx = document.getElementById('reportChart').getContext('2d');
+            new Chart(reportCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Internet', 'CCTV', 'Electrical'],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: [
+                            '#7c3aed',
+                            '#ef4444',
+                            '#f59e0b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function addNotification(message, type = 'info') {
+            const notification = {
+                id: Date.now(),
+                message,
+                type,
+                timestamp: new Date().toLocaleTimeString(),
+                read: false
+            };
+            notifications.unshift(notification);
+            checkNotifications();
+        }
+
+        function checkNotifications() {
+            const panel = document.getElementById('notificationPanel').querySelector('.max-h-64');
+            panel.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                panel.innerHTML = '<p class="text-gray-500 text-center p-4">No notifications</p>';
+                return;
+            }
+
+            notifications.slice(0, 5).forEach(notif => {
+                const div = document.createElement('div');
+                div.className = `p-3 border-b ${notif.read ? 'bg-white' : 'bg-blue-50'}`;
+                div.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="mt-1">
+                            <i class="fas fa-${notif.type === 'success' ? 'check-circle text-green-500' : 'info-circle text-blue-500'}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm">${notif.message}</p>
+                            <p class="text-xs text-gray-500">${notif.timestamp}</p>
+                        </div>
+                    </div>
+                `;
+                panel.appendChild(div);
+            });
         }
 
         function closeModal() {
-            document.getElementById('bookingModal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
         }
 
-        function closeSuccessModal() {
-            document.getElementById('successModal').style.display = 'none';
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Redirect to login page or show login form
+                alert('Logged out successfully');
+                // In a real app, you would redirect to login page
+            }
         }
 
-        function openBookingModal(service) {
-            document.getElementById('serviceType').value = service;
-            document.getElementById('bookingModal').style.display = 'block';
-        }
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
 
-        // User login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            const user = users.find(u => u.username === username && u.password === password);
-            if (user) {
-                alert(`Welcome back, ${user.username}! Role: ${user.role}`);
-                loginPanel.style.display = 'none';
-            } else {
-                alert('Invalid username or password. Only accounts created by admin can login.');
+        // Close modal when clicking outside
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
             }
         });
-
-        // Admin login
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
-            const username = document.getElementById('adminUsername').value;
-            const password = document.getElementById('adminPassword').value;
-
-            if (email === 'writerjackrey@gmail.com' && username === 'ADMIN' && password === 'danpe') {
-                isAdminLoggedIn = true;
-                adminPanel.style.display = 'none';
-                adminDashboard.style.display = 'block';
-                renderUserList();
-            } else {
-                alert('Invalid admin credentials. Only writerjackrey@gmail.com can access admin panel.');
-            }
-        });
-
-        // Create new user (admin only)
-        document.getElementById('createUserForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('newUsername').value;
-            const password = document.getElementById('newPassword').value;
-            const role = document.getElementById('userRole').value;
-
-            if (!username || !password) {
-                alert('Please fill all fields');
-                return;
-            }
-
-            if (users.some(u => u.username === username)) {
-                alert('Username already exists');
-                return;
-            }
-
-            users.push({ username, password, role });
-            alert(`User "${username}" created successfully with role: ${role}`);
-            renderUserList();
-            
-            document.getElementById('newUsername').value = '';
-            document.getElementById('newPassword').value = '';
-        });
-
-        function renderUserList() {
-            const userList = document.getElementById('userList');
-            if (users.length === 0) {
-                userList.innerHTML = '<p class="text-gray-500 text-sm">No users created yet.</p>';
-                return;
-            }
-
-            let html = '<div class="space-y-2">';
-            users.forEach((user, index) => {
-                html += `
-                    <div class="flex justify-between items-center bg-white p-2 rounded text-sm">
-                        <span>${user.username} (${user.role})</span>
-                        <button onclick="deleteUser(${index})" class="text-red-500 text-xs">Delete</button>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            userList.innerHTML = html;
-        }
-
-        function deleteUser(index) {
-            users.splice(index, 1);
-            renderUserList();
-            alert('User deleted successfully');
-        }
-
-        function logoutAdmin() {
-            isAdminLoggedIn = false;
-            adminDashboard.style.display = 'none';
-        }
-
-        // Booking form submit - now captures and displays all contact info
-        document.getElementById('bookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form values
-            const service = document.getElementById('serviceType').value;
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const email = document.getElementById('email').value;
-            const location = document.getElementById('location').value;
-            
-            // Display in success modal
-            document.getElementById('bookingService').textContent = service;
-            document.getElementById('bookingName').textContent = name;
-            document.getElementById('bookingPhone').textContent = phone;
-            document.getElementById('bookingEmail').textContent = email;
-            document.getElementById('bookingLocation').textContent = location;
-            
-            // Close booking modal and show success
-            document.getElementById('bookingModal').style.display = 'none';
-            document.getElementById('successModal').style.display = 'block';
-            
-            // Reset form
-            this.reset();
-        });
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-            if (event.target === loginPanel) {
-                loginPanel.style.display = 'none';
-            }
-            if (event.target === adminPanel) {
-                adminPanel.style.display = 'none';
-            }
-            if (event.target === adminDashboard) {
-                adminDashboard.style.display = 'none';
-            }
-        };
     </script>
 </body>
 </html>
-
