@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kings Fiber Connection - Complete Management System</title>
+    <title>Kings Fiber Connection - Complete Digital Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -16,6 +17,10 @@
                         purple: {
                             600: '#7c3aed',
                             700: '#6d28d9',
+                        },
+                        teal: {
+                            500: '#14b8a6',
+                            600: '#0d9488',
                         }
                     }
                 }
@@ -23,27 +28,19 @@
         }
     </script>
     <style>
-        .dashboard-card {
+        :root {
+            --primary-color: #7c3aed;
+            --secondary-color: #0d9488;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        .card-hover {
             transition: all 0.3s ease;
         }
-        .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .sidebar {
-            transition: all 0.3s ease;
-        }
-        .status-active {
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            color: white;
-        }
-        .status-pending {
-            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-            color: white;
-        }
-        .status-inactive {
-            background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
-            color: white;
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         .modal-overlay {
             display: none;
@@ -55,1376 +52,1657 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        .stat-card {
+        .dashboard-card {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
+        .status-badge {
+            padding: 4px 12px;
             border-radius: 9999px;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 0.75rem;
-            font-weight: bold;
+            font-weight: 600;
+        }
+        .status-active { background: #10b981; color: white; }
+        .status-pending { background: #f59e0b; color: white; }
+        .status-expired { background: #ef4444; color: white; }
+        .tab-active {
+            border-bottom: 3px solid #7c3aed;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+        .sidebar-link {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: #7c3aed;
+        }
+        .sidebar-link.active {
+            background: rgba(124, 58, 237, 0.1);
+            color: #7c3aed;
+            border-left: 4px solid #7c3aed;
+        }
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #7c3aed;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Main Layout -->
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <div id="sidebar" class="sidebar bg-gray-900 text-white w-64 min-h-screen p-6 hidden lg:block">
-            <div class="flex items-center space-x-3 mb-8">
-                <div class="bg-purple-600 p-2 rounded-lg">
-                    <i class="fas fa-wifi text-xl"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold">Kings Fiber</h2>
-                    <p class="text-gray-400 text-sm">Admin Panel</p>
+<body class="bg-gray-50">
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+                <div class="p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-full mb-4">
+                            <i class="fas fa-crown text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
+                        <p class="text-gray-600">Sign in to your account</p>
+                    </div>
+                    
+                    <form id="loginForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="loginEmail" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="loginPassword" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                            </label>
+                            <a href="#" class="text-sm text-purple-600 hover:text-purple-700">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                            Sign In
+                        </button>
+                    </form>
+                    
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">Don't have an account? <a href="#" onclick="showSignup()" class="text-purple-600 hover:text-purple-700 font-semibold">Sign up</a></p>
+                    </div>
                 </div>
             </div>
-            
-            <nav class="space-y-2">
-                <a href="#" onclick="showSection('dashboard')" class="nav-item active flex items-center space-x-3 p-3 rounded-lg bg-purple-600">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" onclick="showSection('bookings')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Bookings</span>
-                    <span id="bookingBadge" class="notification-badge hidden">0</span>
-                </a>
-                <a href="#" onclick="showSection('clients')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
-                    <i class="fas fa-users"></i>
-                    <span>Internet Clients</span>
-                </a>
-                <a href="#" onclick="showSection('billing')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Billing</span>
-                    <span id="dueBadge" class="notification-badge hidden">0</span>
-                </a>
-                <a href="#" onclick="showSection('services')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
-                    <i class="fas fa-cogs"></i>
-                    <span>Services</span>
-                </a>
-                <a href="#" onclick="showSection('reports')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="#" onclick="showSection('settings')" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </nav>
-            
-            <div class="mt-auto pt-8 border-t border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user"></i>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal-overlay hidden">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+                <div class="p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-full mb-4">
+                            <i class="fas fa-user-plus text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">Create Account</h2>
+                        <p class="text-gray-600">Join Kings Fiber Connection</p>
                     </div>
-                    <div>
-                        <p class="font-semibold" id="adminName">Admin</p>
-                        <p class="text-gray-400 text-sm">Super Admin</p>
+                    
+                    <form id="signupForm" class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                <input type="text" id="firstName" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                <input type="text" id="lastName" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="signupEmail" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="phone" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="signupPassword" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                            <input type="password" id="confirmPassword" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="terms" required 
+                                   class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                            <label for="terms" class="ml-2 text-sm text-gray-600">
+                                I agree to the <a href="#" class="text-purple-600 hover:text-purple-700">Terms & Conditions</a>
+                            </label>
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700">
+                            Create Account
+                        </button>
+                    </form>
+                    
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">Already have an account? <a href="#" onclick="showLogin()" class="text-purple-600 hover:text-purple-700 font-semibold">Sign in</a></p>
                     </div>
-                    <button onclick="logout()" class="ml-auto text-gray-400 hover:text-white">
-                        <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="appContainer" class="hidden">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Left side: Logo and menu -->
+                    <div class="flex items-center">
+                        <button onclick="toggleSidebar()" class="p-2 rounded-md text-gray-700 hover:bg-gray-100 lg:hidden">
+                            <i class="fas fa-bars text-lg"></i>
+                        </button>
+                        <div class="flex items-center ml-4">
+                            <div class="bg-purple-600 p-2 rounded-lg">
+                                <i class="fas fa-crown text-white"></i>
+                            </div>
+                            <span class="ml-3 text-xl font-bold text-gray-900">Kings Fiber</span>
+                        </div>
+                    </div>
+
+                    <!-- Right side: User menu -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Notifications -->
+                        <div class="relative">
+                            <button onclick="toggleNotifications()" class="p-2 text-gray-600 hover:text-purple-600 relative">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span id="notificationBadge" class="notification-dot hidden"></span>
+                            </button>
+                            <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border">
+                                <div class="p-4 border-b">
+                                    <h3 class="font-bold text-gray-900">Notifications</h3>
+                                </div>
+                                <div id="notificationList" class="max-h-64 overflow-y-auto">
+                                    <!-- Notifications loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User profile -->
+                        <div class="relative">
+                            <button onclick="toggleUserMenu()" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-purple-600"></i>
+                                </div>
+                                <div class="hidden md:block text-left">
+                                    <p class="text-sm font-medium" id="userName">Loading...</p>
+                                    <p class="text-xs text-gray-500" id="userRole">Loading...</p>
+                                </div>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border">
+                                <div class="py-1">
+                                    <a href="#" onclick="showDashboard()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                                    </a>
+                                    <a href="#" onclick="showProfile()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-user-circle mr-2"></i>My Profile
+                                    </a>
+                                    <a href="#" onclick="showSettings()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-cog mr-2"></i>Settings
+                                    </a>
+                                    <hr class="my-1">
+                                    <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Layout -->
+        <div class="flex">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar hidden lg:block bg-gray-900 text-white w-64 min-h-[calc(100vh-64px)]">
+                <nav class="p-4 space-y-2">
+                    <div id="adminNav" class="hidden">
+                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-2 px-4">Admin</p>
+                        <a href="#" onclick="showAdminDashboard()" class="sidebar-link flex items-center">
+                            <i class="fas fa-tachometer-alt w-6 mr-3"></i>
+                            <span>Admin Dashboard</span>
+                        </a>
+                        <a href="#" onclick="showUserManagement()" class="sidebar-link flex items-center">
+                            <i class="fas fa-users w-6 mr-3"></i>
+                            <span>User Management</span>
+                        </a>
+                        <a href="#" onclick="showServiceManagement()" class="sidebar-link flex items-center">
+                            <i class="fas fa-cogs w-6 mr-3"></i>
+                            <span>Service Management</span>
+                        </a>
+                        <a href="#" onclick="showBookingManagement()" class="sidebar-link flex items-center">
+                            <i class="fas fa-calendar-check w-6 mr-3"></i>
+                            <span>Booking Management</span>
+                        </a>
+                        <a href="#" onclick="showBillingManagement()" class="sidebar-link flex items-center">
+                            <i class="fas fa-credit-card w-6 mr-3"></i>
+                            <span>Billing Management</span>
+                        </a>
+                    </div>
+                    
+                    <div id="userNav">
+                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-2 px-4">Main</p>
+                        <a href="#" onclick="showDashboard()" class="sidebar-link active flex items-center">
+                            <i class="fas fa-home w-6 mr-3"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" onclick="showMyServices()" class="sidebar-link flex items-center">
+                            <i class="fas fa-wifi w-6 mr-3"></i>
+                            <span>My Services</span>
+                        </a>
+                        <a href="#" onclick="showBilling()" class="sidebar-link flex items-center">
+                            <i class="fas fa-file-invoice-dollar w-6 mr-3"></i>
+                            <span>Billing & Payments</span>
+                        </a>
+                        <a href="#" onclick="showShop()" class="sidebar-link flex items-center">
+                            <i class="fas fa-shopping-cart w-6 mr-3"></i>
+                            <span>Equipment Shop</span>
+                        </a>
+                        <a href="#" onclick="showSupport()" class="sidebar-link flex items-center">
+                            <i class="fas fa-headset w-6 mr-3"></i>
+                            <span>Support</span>
+                        </a>
+                    </div>
+                    
+                    <div class="pt-4 mt-4 border-t border-gray-800">
+                        <p class="text-xs uppercase tracking-wider text-gray-400 mb-2 px-4">Quick Actions</p>
+                        <a href="#" onclick="bookService()" class="sidebar-link flex items-center">
+                            <i class="fas fa-plus-circle w-6 mr-3"></i>
+                            <span>Book Service</span>
+                        </a>
+                        <a href="#" onclick="renewService()" class="sidebar-link flex items-center">
+                            <i class="fas fa-sync-alt w-6 mr-3"></i>
+                            <span>Renew Service</span>
+                        </a>
+                        <a href="#" onclick="reportIssue()" class="sidebar-link flex items-center">
+                            <i class="fas fa-exclamation-triangle w-6 mr-3"></i>
+                            <span>Report Issue</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1 p-4 lg:p-6">
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden flex items-center justify-center h-64">
+                    <div class="loading-spinner"></div>
+                </div>
+
+                <!-- Admin Dashboard -->
+                <div id="adminDashboard" class="hidden">
+                    <!-- Admin content loaded here -->
+                </div>
+
+                <!-- User Dashboard -->
+                <div id="userDashboard">
+                    <!-- Dashboard content will be loaded here -->
+                </div>
+
+                <!-- Service Management -->
+                <div id="serviceManagement" class="hidden">
+                    <!-- Service management content loaded here -->
+                </div>
+
+                <!-- Shop -->
+                <div id="shopContent" class="hidden">
+                    <!-- Shop content loaded here -->
+                </div>
+
+                <!-- Profile -->
+                <div id="profileContent" class="hidden">
+                    <!-- Profile content loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Landing Page (Visible before login) -->
+    <div id="landingPage">
+        <!-- Header -->
+        <header class="gradient-bg text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-white p-2 rounded-lg">
+                            <i class="fas fa-crown text-purple-600 text-2xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold">Kings Fiber Connection</span>
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#services" class="hover:text-purple-200 transition-colors">Services</a>
+                        <a href="#shop" class="hover:text-purple-200 transition-colors">Shop</a>
+                        <a href="#about" class="hover:text-purple-200 transition-colors">About</a>
+                        <a href="#contact" class="hover:text-purple-200 transition-colors">Contact</a>
+                    </div>
+                    <button onclick="showLogin()" class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
                     </button>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Main Content -->
-        <div class="flex-1">
-            <!-- Top Bar -->
-            <header class="bg-white shadow-sm p-4">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-4">
-                        <button onclick="toggleSidebar()" class="lg:hidden text-gray-700">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900">Kings Fiber Connection</h1>
-                            <p class="text-gray-600">Complete Service Solutions Management</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <button onclick="toggleNotifications()" class="relative p-2 text-gray-600 hover:text-purple-600">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span id="notificationCount" class="notification-badge hidden">0</span>
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h1 class="text-5xl font-bold mb-6 leading-tight">
+                            Complete Digital Solutions for Homes & Businesses
+                        </h1>
+                        <p class="text-xl mb-8 opacity-90">
+                            High-speed internet, professional CCTV installation, electrical services, 
+                            and premium equipment - all in one place.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="showSignup()" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                Get Started Free
                             </button>
-                            <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
-                                <div class="p-4 border-b">
-                                    <h3 class="font-bold">Notifications</h3>
-                                </div>
-                                <div class="max-h-64 overflow-y-auto">
-                                    <!-- Notifications will be populated here -->
-                                </div>
+                            <button onclick="scrollToServices()" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                                View Services
+                            </button>
+                        </div>
+                        <div class="mt-8 flex items-center space-x-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-300 text-xl mr-2"></i>
+                                <span>24/7 Support</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-300 text-xl mr-2"></i>
+                                <span>Free Installation</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-300 text-xl mr-2"></i>
+                                <span>Warranty Included</span>
                             </div>
                         </div>
-                        <div class="hidden md:block">
-                            <span id="currentDate" class="text-gray-600"></span>
-                        </div>
+                    </div>
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" 
+                             alt="Smart Home Automation" class="rounded-2xl shadow-2xl">
                     </div>
                 </div>
-            </header>
+            </div>
+        </section>
 
-            <!-- Main Content Sections -->
-            <main class="p-6">
-                <!-- Dashboard Section -->
-                <section id="dashboard" class="section">
-                    <div class="mb-8">
-                        <h2 class="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
-                        <p class="text-gray-600">Welcome back! Here's what's happening with your business.</p>
-                    </div>
+        <!-- Services Section -->
+        <section id="services" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Professional solutions for all your digital and security needs
+                    </p>
+                </div>
 
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="stat-card">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Total Revenue</p>
-                                    <p class="text-3xl font-bold text-gray-900">Ksh <span id="totalRevenue">0</span></p>
-                                </div>
-                                <div class="bg-green-100 p-3 rounded-full">
-                                    <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-2">This month</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Internet Services -->
+                    <div class="card-hover bg-gray-50 p-8 rounded-xl">
+                        <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-wifi text-purple-600 text-2xl"></i>
                         </div>
-
-                        <div class="stat-card">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Active Clients</p>
-                                    <p class="text-3xl font-bold text-gray-900" id="activeClients">0</p>
-                                </div>
-                                <div class="bg-blue-100 p-3 rounded-full">
-                                    <i class="fas fa-users text-blue-600 text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-2">Internet service subscribers</p>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Pending Bookings</p>
-                                    <p class="text-3xl font-bold text-gray-900" id="pendingBookings">0</p>
-                                </div>
-                                <div class="bg-yellow-100 p-3 rounded-full">
-                                    <i class="fas fa-calendar-alt text-yellow-600 text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-2">Awaiting confirmation</p>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Due Payments</p>
-                                    <p class="text-3xl font-bold text-gray-900">Ksh <span id="duePayments">0</span></p>
-                                </div>
-                                <div class="bg-red-100 p-3 rounded-full">
-                                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-2">Overdue invoices</p>
-                        </div>
-                    </div>
-
-                    <!-- Charts and Recent Activity -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Revenue Trend</h3>
-                            <div class="chart-container">
-                                <canvas id="revenueChart"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Recent Activity</h3>
-                            <div class="space-y-4">
-                                <!-- Activity items will be populated here -->
-                                <div id="recentActivities"></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Bookings Section -->
-                <section id="bookings" class="section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-900">Service Bookings</h2>
-                            <p class="text-gray-600">Manage incoming service requests and appointments</p>
-                        </div>
-                        <button onclick="showNewBookingModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                            <i class="fas fa-plus mr-2"></i> New Booking
+                        <h3 class="text-2xl font-bold mb-4">High-Speed Internet</h3>
+                        <p class="text-gray-600 mb-6">Fiber optic internet for homes, businesses, and gamers with speeds up to 10Gbps.</p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Gamer Pro Packages</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Business Solutions</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Home Premium</span>
+                            </li>
+                        </ul>
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80" 
+                             alt="Internet Installation" class="rounded-lg mb-4">
+                        <button onclick="showSignup()" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700">
+                            Get Connected
                         </button>
                     </div>
 
-                    <!-- Booking Filters -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
-                        <div class="flex flex-wrap gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
-                                <select id="bookingFilterService" onchange="filterBookings()" class="border border-gray-300 rounded-lg px-3 py-2">
-                                    <option value="all">All Services</option>
-                                    <option value="internet">Internet</option>
-                                    <option value="cctv">CCTV</option>
-                                    <option value="electrical">Electrical</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                <select id="bookingFilterStatus" onchange="filterBookings()" class="border border-gray-300 rounded-lg px-3 py-2">
-                                    <option value="all">All Status</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="confirmed">Confirmed</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
-                                <input type="text" id="bookingDateRange" placeholder="Select date range" class="border border-gray-300 rounded-lg px-3 py-2">
-                            </div>
+                    <!-- CCTV Services -->
+                    <div class="card-hover bg-gray-50 p-8 rounded-xl">
+                        <div class="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-video text-red-600 text-2xl"></i>
                         </div>
-                    </div>
-
-                    <!-- Bookings Table -->
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bookingsTable" class="bg-white divide-y divide-gray-200">
-                                <!-- Bookings will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Internet Clients Section -->
-                <section id="clients" class="section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-900">Internet Clients</h2>
-                            <p class="text-gray-600">Manage internet service subscribers and accounts</p>
-                        </div>
-                        <button onclick="showNewClientModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                            <i class="fas fa-user-plus mr-2"></i> Add New Client
+                        <h3 class="text-2xl font-bold mb-4">CCTV Security</h3>
+                        <p class="text-gray-600 mb-6">Professional surveillance systems with AI detection and remote monitoring.</p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>HD & 4K Cameras</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Smart Motion Detection</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Cloud Storage</span>
+                            </li>
+                        </ul>
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80" 
+                             alt="CCTV Installation" class="rounded-lg mb-4">
+                        <button onclick="showSignup()" class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">
+                            Secure Your Property
                         </button>
-                    </div>
-
-                    <!-- Client Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-gray-500">Total Clients</p>
-                            <p class="text-2xl font-bold" id="totalClients">0</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-gray-500">Active</p>
-                            <p class="text-2xl font-bold text-green-600" id="activeInternetClients">0</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-gray-500">Due Renewal</p>
-                            <p class="text-2xl font-bold text-yellow-600" id="dueRenewalClients">0</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow-sm">
-                            <p class="text-gray-500">Inactive</p>
-                            <p class="text-2xl font-bold text-red-600" id="inactiveClients">0</p>
-                        </div>
-                    </div>
-
-                    <!-- Clients Table -->
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Connection Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Renewal Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="clientsTable" class="bg-white divide-y divide-gray-200">
-                                <!-- Clients will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Billing Section -->
-                <section id="billing" class="section hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h2 class="text-3xl font-bold text-gray-900">Billing System</h2>
-                            <p class="text-gray-600">Automated billing and payment tracking</p>
-                        </div>
-                        <button onclick="generateInvoices()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                            <i class="fas fa-file-invoice-dollar mr-2"></i> Generate Monthly Invoices
-                        </button>
-                    </div>
-
-                    <!-- Billing Overview -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">This Month's Revenue</h3>
-                            <p class="text-3xl font-bold text-gray-900">Ksh <span id="monthlyRevenue">0</span></p>
-                            <div class="flex items-center mt-2">
-                                <span id="revenueChange" class="text-sm"></span>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Pending Payments</h3>
-                            <p class="text-3xl font-bold text-yellow-600">Ksh <span id="pendingPayments">0</span></p>
-                            <p class="text-sm text-gray-500 mt-2"><span id="pendingInvoices">0</span> invoices pending</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Overdue Payments</h3>
-                            <p class="text-3xl font-bold text-red-600">Ksh <span id="overduePayments">0</span></p>
-                            <p class="text-sm text-gray-500 mt-2"><span id="overdueInvoices">0</span> invoices overdue</p>
-                        </div>
-                    </div>
-
-                    <!-- Invoices Table -->
-                    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
-                        <div class="px-6 py-4 border-b">
-                            <h3 class="text-lg font-bold">Recent Invoices</h3>
-                        </div>
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice #</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invoicesTable" class="bg-white divide-y divide-gray-200">
-                                <!-- Invoices will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Auto-Billing Settings -->
-                    <div class="stat-card">
-                        <h3 class="text-lg font-bold mb-4">Auto-Billing Settings</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium">Automatic Invoice Generation</p>
-                                    <p class="text-sm text-gray-500">Generate invoices automatically on renewal dates</p>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" id="autoGenerate" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium">Payment Reminders</p>
-                                    <p class="text-sm text-gray-500">Send automatic reminders before due dates</p>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" id="autoReminders" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium">Late Payment Penalties</p>
-                                    <p class="text-sm text-gray-500">Apply penalties for overdue payments</p>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" id="latePenalties" checked>
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Services Section -->
-                <section id="services" class="section hidden">
-                    <div class="mb-6">
-                        <h2 class="text-3xl font-bold text-gray-900">Service Management</h2>
-                        <p class="text-gray-600">Configure internet plans, CCTV packages, and electrical services</p>
-                    </div>
-
-                    <!-- Internet Plans -->
-                    <div class="stat-card mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">Internet Plans</h3>
-                            <button onclick="showNewPlanModal()" class="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm">
-                                <i class="fas fa-plus mr-1"></i> Add Plan
-                            </button>
-                        </div>
-                        <div id="internetPlans" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <!-- Plans will be populated here -->
-                        </div>
-                    </div>
-
-                    <!-- CCTV Packages -->
-                    <div class="stat-card mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">CCTV Packages</h3>
-                            <button onclick="showNewCCTVModal()" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm">
-                                <i class="fas fa-plus mr-1"></i> Add Package
-                            </button>
-                        </div>
-                        <div id="cctvPackages" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- Packages will be populated here -->
-                        </div>
                     </div>
 
                     <!-- Electrical Services -->
-                    <div class="stat-card">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">Electrical Services</h3>
-                            <button onclick="showNewElectricalModal()" class="bg-yellow-600 text-white px-3 py-1 rounded-lg text-sm">
-                                <i class="fas fa-plus mr-1"></i> Add Service
-                            </button>
+                    <div class="card-hover bg-gray-50 p-8 rounded-xl">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-bolt text-yellow-600 text-2xl"></i>
                         </div>
-                        <div id="electricalServices" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- Services will be populated here -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Reports Section -->
-                <section id="reports" class="section hidden">
-                    <div class="mb-6">
-                        <h2 class="text-3xl font-bold text-gray-900">Business Reports</h2>
-                        <p class="text-gray-600">Analytics and insights for better decision making</p>
-                    </div>
-
-                    <!-- Report Filters -->
-                    <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
-                        <div class="flex flex-wrap gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
-                                <select id="reportType" class="border border-gray-300 rounded-lg px-3 py-2">
-                                    <option value="revenue">Revenue Report</option>
-                                    <option value="clients">Client Growth</option>
-                                    <option value="services">Service Performance</option>
-                                    <option value="billing">Billing Status</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
-                                <select id="reportPeriod" class="border border-gray-300 rounded-lg px-3 py-2">
-                                    <option value="monthly">This Month</option>
-                                    <option value="quarterly">This Quarter</option>
-                                    <option value="yearly">This Year</option>
-                                    <option value="custom">Custom Range</option>
-                                </select>
-                            </div>
-                            <div class="flex items-end">
-                                <button onclick="generateReport()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                                    Generate Report
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Report Content -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Revenue Breakdown</h3>
-                            <div class="chart-container">
-                                <canvas id="reportChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Key Metrics</h3>
-                            <div class="space-y-4" id="keyMetrics">
-                                <!-- Metrics will be populated here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Export Options -->
-                    <div class="mt-6 flex justify-end space-x-4">
-                        <button onclick="exportPDF()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-                            <i class="fas fa-file-pdf mr-2"></i> Export PDF
-                        </button>
-                        <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                            <i class="fas fa-file-excel mr-2"></i> Export Excel
-                        </button>
-                        <button onclick="printReport()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-print mr-2"></i> Print Report
+                        <h3 class="text-2xl font-bold mb-4">Electrical Solutions</h3>
+                        <p class="text-gray-600 mb-6">Professional electrical installations, maintenance, and emergency services.</p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Smart Home Wiring</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Generator Installation</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>24/7 Emergency</span>
+                            </li>
+                        </ul>
+                        <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=400&q=80" 
+                             alt="Electrical Work" class="rounded-lg mb-4">
+                        <button onclick="showSignup()" class="w-full bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-yellow-700">
+                            Book Electrician
                         </button>
                     </div>
-                </section>
+                </div>
+            </div>
+        </section>
 
-                <!-- Settings Section -->
-                <section id="settings" class="section hidden">
-                    <div class="mb-6">
-                        <h2 class="text-3xl font-bold text-gray-900">System Settings</h2>
-                        <p class="text-gray-600">Configure system preferences and user management</p>
-                    </div>
+        <!-- Equipment Shop Preview -->
+        <section id="shop" class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Premium Equipment Shop</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        High-quality equipment for all your installation needs
+                    </p>
+                </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Company Settings -->
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Company Information</h3>
-                            <form id="companyForm" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-                                    <input type="text" id="companyName" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="Kings Fiber Connection">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
-                                    <input type="text" id="companyPhone" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="0113 898 413">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-                                    <input type="email" id="companyEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="writerjackrey@gmail.com">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                                    <input type="text" id="companyLocation" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="Thika, Kenya">
-                                </div>
-                                <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
-                                    Save Changes
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Billing Settings -->
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">Billing Configuration</h3>
-                            <form id="billingForm" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                                    <select id="currency" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                        <option value="KES">Kenyan Shilling (KES)</option>
-                                        <option value="USD">US Dollar (USD)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
-                                    <input type="number" id="paymentTerms" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="15" placeholder="Days">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Late Fee Percentage</label>
-                                    <input type="number" id="lateFee" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="5" placeholder="%">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tax Rate</label>
-                                    <input type="number" id="taxRate" class="w-full border border-gray-300 rounded-lg px-3 py-2" value="16" placeholder="%">
-                                </div>
-                                <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
-                                    Save Configuration
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- User Management -->
-                        <div class="stat-card">
-                            <h3 class="text-lg font-bold mb-4">User Management</h3>
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="font-medium">Admin Users</p>
-                                        <p class="text-sm text-gray-500">System administrators</p>
-                                    </div>
-                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">2 Users</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="font-medium">Technicians</p>
-                                        <p class="text-sm text-gray-500">Field service technicians</p>
-                                    </div>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">5 Users</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="font-medium">Support Staff</p>
-                                        <p class="text-sm text-gray-500">Customer support</p>
-                                    </div>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">3 Users</span>
-                                </div>
-                                <button onclick="showNewUserModal()" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
-                                    <i class="fas fa-user-plus mr-2"></i> Add New User
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Product 1 -->
+                    <div class="card-hover bg-white rounded-xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1597764690470-664574b1e6d4?auto=format&fit=crop&w=400&q=80" 
+                             alt="WiFi 6 Router" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2">WiFi 6 Router</h3>
+                            <p class="text-gray-600 text-sm mb-3">High-speed professional router</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xl font-bold text-purple-600">Ksh 15,000</span>
+                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
+                                    Buy Now
                                 </button>
                             </div>
                         </div>
                     </div>
-                </section>
-            </main>
-        </div>
+
+                    <!-- Product 2 -->
+                    <div class="card-hover bg-white rounded-xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80" 
+                             alt="4K CCTV Camera" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2">4K CCTV Camera</h3>
+                            <p class="text-gray-600 text-sm mb-3">Professional security camera</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xl font-bold text-purple-600">Ksh 8,500</span>
+                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
+                                    Buy Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="card-hover bg-white rounded-xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80" 
+                             alt="Generator" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2">Silent Generator</h3>
+                            <p class="text-gray-600 text-sm mb-3">10KVA backup power</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xl font-bold text-purple-600">Ksh 120,000</span>
+                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
+                                    Buy Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="card-hover bg-white rounded-xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80" 
+                             alt="Tool Kit" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2">Fiber Tool Kit</h3>
+                            <p class="text-gray-600 text-sm mb-3">Complete installation tools</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xl font-bold text-purple-600">Ksh 35,000</span>
+                                <button onclick="showLogin()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
+                                    Buy Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-12">
+                    <button onclick="showLogin()" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700">
+                        <i class="fas fa-store mr-2"></i>Visit Full Shop
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-gradient-to-r from-purple-900 to-blue-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold mb-4">Contact Us</h2>
+                    <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                        Ready to get started? Contact our team for professional solutions
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center p-6">
+                        <div class="text-3xl mb-4">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Call Us</h3>
+                        <p class="opacity-90">0113 898 413</p>
+                        <p class="opacity-90">0717 005 857</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="text-3xl mb-4">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Email Us</h3>
+                        <p class="opacity-90">writerjackrey@gmail.com</p>
+                        <p class="opacity-90">support@kingsfiber.co.ke</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="text-3xl mb-4">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Location</h3>
+                        <p class="opacity-90">Thika, Kenya</p>
+                        <p class="opacity-90">Serving Nationwide</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <i class="fas fa-crown text-purple-400"></i>
+                            <span class="text-xl font-bold">Kings Fiber</span>
+                        </div>
+                        <p class="text-gray-400">
+                            Complete digital solutions provider for homes and businesses across Kenya.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Services</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#services" class="hover:text-white">Internet Installation</a></li>
+                            <li><a href="#services" class="hover:text-white">CCTV Security</a></li>
+                            <li><a href="#services" class="hover:text-white">Electrical Services</a></li>
+                            <li><a href="#shop" class="hover:text-white">Equipment Shop</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Company</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#about" class="hover:text-white">About Us</a></li>
+                            <li><a href="#contact" class="hover:text-white">Contact</a></li>
+                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Careers</a></li>
+                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Partnership</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Legal</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Terms of Service</a></li>
+                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Privacy Policy</a></li>
+                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Refund Policy</a></li>
+                            <li><a href="#" onclick="showLogin()" class="hover:text-white">Service Agreement</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; 2024 Kings Fiber Connection. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Modal Overlay -->
-    <div id="modalOverlay" class="modal-overlay">
-        <!-- Modals will be inserted here -->
-    </div>
-
-    <!-- Charts.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script>
-        // Initialize date picker
-        flatpickr("#bookingDateRange", {
-            mode: "range",
-            dateFormat: "Y-m-d",
+        // Database simulation (In production, replace with real backend API calls)
+        const DB = {
+            users: JSON.parse(localStorage.getItem('kingsFiberUsers')) || [
+                {
+                    id: 1,
+                    email: 'admin@kingsfiber.co.ke',
+                    password: 'admin123',
+                    firstName: 'System',
+                    lastName: 'Admin',
+                    phone: '0717005857',
+                    role: 'admin',
+                    services: [],
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    email: 'customer@example.com',
+                    password: 'customer123',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    phone: '0712345678',
+                    role: 'customer',
+                    services: [
+                        {
+                            id: 1,
+                            type: 'internet',
+                            name: 'Gamer Pro 1Gbps',
+                            price: 5000,
+                            status: 'active',
+                            startDate: '2024-01-01',
+                            renewalDate: '2024-02-01',
+                            usage: {
+                                dataUsed: '350GB',
+                                dataLimit: 'Unlimited',
+                                speed: '1Gbps',
+                                uptime: '99.8%'
+                            }
+                        }
+                    ],
+                    invoices: [
+                        {
+                            id: 'INV001',
+                            service: 'Gamer Pro 1Gbps',
+                            amount: 5000,
+                            dueDate: '2024-02-01',
+                            status: 'paid',
+                            paymentDate: '2024-01-25'
+                        }
+                    ],
+                    createdAt: new Date().toISOString()
+                }
+            ],
+            services: JSON.parse(localStorage.getItem('kingsFiberServices')) || [
+                {
+                    id: 1,
+                    category: 'internet',
+                    name: 'Gamer Pro',
+                    speed: '1 Gbps',
+                    price: 5000,
+                    features: ['Ultra Low Latency', 'Gaming Router', 'DDoS Protection', 'Priority Support'],
+                    description: 'Perfect for gamers and streaming',
+                    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80'
+                },
+                {
+                    id: 2,
+                    category: 'internet',
+                    name: 'Home Premium',
+                    speed: '200 Mbps',
+                    price: 3500,
+                    features: ['Unlimited Data', 'Wi-Fi 6 Router', 'Smart Home Ready', 'Free Installation'],
+                    description: 'Ideal for family homes',
+                    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80'
+                },
+                {
+                    id: 3,
+                    category: 'cctv',
+                    name: 'Basic Home Security',
+                    price: 15000,
+                    features: ['4 HD Cameras', '1TB DVR', 'Night Vision', 'Mobile App Access'],
+                    description: 'Essential home security package',
+                    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80'
+                }
+            ],
+            products: JSON.parse(localStorage.getItem('kingsFiberProducts')) || [
+                {
+                    id: 1,
+                    name: 'WiFi 6 Router',
+                    category: 'routers',
+                    price: 15000,
+                    image: 'https://images.unsplash.com/photo-1597764690470-664574b1e6d4?auto=format&fit=crop&w=400&q=80',
+                    description: 'Professional grade WiFi 6 router with mesh capabilities',
+                    stock: 25
+                }
+            ]
+        };
+
+        // Application State
+        let currentUser = null;
+        let cart = JSON.parse(localStorage.getItem('kingsFiberCart')) || [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadLandingPage();
         });
 
-        // Global Data Stores
-        let bookings = [
-            {
-                id: 'BK001',
-                client: 'John Doe',
-                service: 'Internet - Gamer Pro',
-                date: '2024-01-15',
-                amount: 5000,
-                status: 'pending',
-                phone: '0712345678',
-                email: 'john@example.com',
-                location: 'Nairobi'
-            }
-        ];
-
-        let internetClients = [
-            {
-                id: 'CL001',
-                name: 'Jane Smith',
-                plan: 'Gamer Pro - 1 Gbps',
-                price: 5000,
-                location: 'Kiambu',
-                connectionDate: '2024-01-01',
-                renewalDate: '2024-02-01',
-                status: 'active',
-                phone: '0712345679',
-                email: 'jane@example.com'
-            }
-        ];
-
-        let invoices = [
-            {
-                id: 'INV001',
-                client: 'Jane Smith',
-                amount: 5000,
-                dueDate: '2024-02-01',
-                status: 'paid',
-                service: 'Internet - Gamer Pro'
-            }
-        ];
-
-        let notifications = [];
-        let currentUser = { name: 'Admin', role: 'super_admin' };
-
-        // Initialize dashboard
-        function initializeDashboard() {
-            updateStats();
-            updateBookingsTable();
-            updateClientsTable();
-            updateInvoicesTable();
-            updateDate();
-            loadCharts();
-            checkNotifications();
-        }
-
-        function updateDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
-        }
-
-        function updateStats() {
-            // Calculate stats
-            const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((sum, inv) => sum + inv.amount, 0);
-            const pendingBookings = bookings.filter(b => b.status === 'pending').length;
-            const activeClients = internetClients.filter(c => c.status === 'active').length;
-            const duePayments = invoices.filter(i => i.status === 'pending').reduce((sum, inv) => sum + inv.amount, 0);
-
-            // Update UI
-            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString();
-            document.getElementById('pendingBookings').textContent = pendingBookings;
-            document.getElementById('activeClients').textContent = activeClients;
-            document.getElementById('duePayments').textContent = duePayments.toLocaleString();
-
-            // Update badges
-            updateBadges(pendingBookings, invoices.filter(i => i.status === 'pending').length);
-        }
-
-        function updateBadges(pendingBookings, pendingInvoices) {
-            const bookingBadge = document.getElementById('bookingBadge');
-            const dueBadge = document.getElementById('dueBadge');
-            const notificationBadge = document.getElementById('notificationCount');
-
-            if (pendingBookings > 0) {
-                bookingBadge.textContent = pendingBookings;
-                bookingBadge.classList.remove('hidden');
-            } else {
-                bookingBadge.classList.add('hidden');
-            }
-
-            if (pendingInvoices > 0) {
-                dueBadge.textContent = pendingInvoices;
-                dueBadge.classList.remove('hidden');
-            } else {
-                dueBadge.classList.add('hidden');
-            }
-
-            if (notifications.length > 0) {
-                notificationBadge.textContent = notifications.length;
-                notificationBadge.classList.remove('hidden');
-            } else {
-                notificationBadge.classList.add('hidden');
-            }
-        }
-
-        function updateBookingsTable() {
-            const table = document.getElementById('bookingsTable');
-            table.innerHTML = '';
-
-            bookings.forEach(booking => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">${booking.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div>${booking.client}</div>
-                        <div class="text-sm text-gray-500">${booking.phone}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">${booking.service}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${booking.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">Ksh ${booking.amount.toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(booking.status)}">
-                            ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="viewBooking('${booking.id}')" class="text-blue-600 hover:text-blue-900 mr-2">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button onclick="editBooking('${booking.id}')" class="text-green-600 hover:text-green-900 mr-2">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="confirmBooking('${booking.id}')" class="text-purple-600 hover:text-purple-900 mr-2">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <button onclick="deleteBooking('${booking.id}')" class="text-red-600 hover:text-red-900">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                table.appendChild(row);
-            });
-        }
-
-        function updateClientsTable() {
-            const table = document.getElementById('clientsTable');
-            table.innerHTML = '';
-
-            internetClients.forEach(client => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">${client.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div>${client.name}</div>
-                        <div class="text-sm text-gray-500">${client.phone}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">${client.plan}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${client.location}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${client.connectionDate}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${client.renewalDate}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(client.status)}">
-                            ${client.status.charAt(0).toUpperCase() + client.status.slice(1)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="viewClient('${client.id}')" class="text-blue-600 hover:text-blue-900 mr-2">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button onclick="editClient('${client.id}')" class="text-green-600 hover:text-green-900 mr-2">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="sendInvoice('${client.id}')" class="text-purple-600 hover:text-purple-900 mr-2">
-                            <i class="fas fa-file-invoice"></i>
-                        </button>
-                    </td>
-                `;
-                table.appendChild(row);
-            });
-
-            // Update client stats
-            updateClientStats();
-        }
-
-        function updateClientStats() {
-            const totalClients = internetClients.length;
-            const activeClients = internetClients.filter(c => c.status === 'active').length;
-            const dueRenewal = internetClients.filter(c => {
-                const renewal = new Date(c.renewalDate);
-                const today = new Date();
-                const daysDiff = Math.ceil((renewal - today) / (1000 * 60 * 60 * 24));
-                return daysDiff <= 7 && daysDiff >= 0;
-            }).length;
-            const inactiveClients = internetClients.filter(c => c.status === 'inactive').length;
-
-            document.getElementById('totalClients').textContent = totalClients;
-            document.getElementById('activeInternetClients').textContent = activeClients;
-            document.getElementById('dueRenewalClients').textContent = dueRenewal;
-            document.getElementById('inactiveClients').textContent = inactiveClients;
-        }
-
-        function updateInvoicesTable() {
-            const table = document.getElementById('invoicesTable');
-            table.innerHTML = '';
-
-            invoices.forEach(invoice => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">${invoice.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${invoice.client}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">Ksh ${invoice.amount.toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${invoice.dueDate}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(invoice.status)}">
-                            ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="viewInvoice('${invoice.id}')" class="text-blue-600 hover:text-blue-900 mr-2">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button onclick="markAsPaid('${invoice.id}')" class="text-green-600 hover:text-green-900 mr-2">
-                            <i class="fas fa-check-circle"></i>
-                        </button>
-                        <button onclick="sendReminder('${invoice.id}')" class="text-yellow-600 hover:text-yellow-900 mr-2">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                    </td>
-                `;
-                table.appendChild(row);
-            });
-
-            updateBillingStats();
-        }
-
-        function updateBillingStats() {
-            const monthlyRevenue = invoices
-                .filter(i => i.status === 'paid' && new Date().getMonth() === new Date(i.dueDate).getMonth())
-                .reduce((sum, inv) => sum + inv.amount, 0);
-
-            const pendingPayments = invoices
-                .filter(i => i.status === 'pending')
-                .reduce((sum, inv) => sum + inv.amount, 0);
-
-            const pendingInvoices = invoices.filter(i => i.status === 'pending').length;
-
-            const overduePayments = invoices
-                .filter(i => {
-                    if (i.status !== 'pending') return false;
-                    const dueDate = new Date(i.dueDate);
-                    const today = new Date();
-                    return dueDate < today;
-                })
-                .reduce((sum, inv) => sum + inv.amount, 0);
-
-            const overdueInvoices = invoices.filter(i => {
-                if (i.status !== 'pending') return false;
-                const dueDate = new Date(i.dueDate);
-                const today = new Date();
-                return dueDate < today;
-            }).length;
-
-            document.getElementById('monthlyRevenue').textContent = monthlyRevenue.toLocaleString();
-            document.getElementById('pendingPayments').textContent = pendingPayments.toLocaleString();
-            document.getElementById('pendingInvoices').textContent = pendingInvoices;
-            document.getElementById('overduePayments').textContent = overduePayments.toLocaleString();
-            document.getElementById('overdueInvoices').textContent = overdueInvoices;
-        }
-
-        function getStatusClass(status) {
-            switch(status) {
-                case 'active':
-                case 'paid':
-                case 'completed':
-                case 'confirmed':
-                    return 'bg-green-100 text-green-800';
-                case 'pending':
-                    return 'bg-yellow-100 text-yellow-800';
-                case 'inactive':
-                case 'cancelled':
-                    return 'bg-red-100 text-red-800';
-                default:
-                    return 'bg-gray-100 text-gray-800';
-            }
-        }
-
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('hidden');
-
-            // Update active nav item
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('bg-purple-600');
-                item.classList.add('hover:bg-gray-800');
-            });
-
-            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('bg-purple-600');
-            document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.remove('hover:bg-gray-800');
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-        }
-
-        function toggleNotifications() {
-            document.getElementById('notificationPanel').classList.toggle('hidden');
-        }
-
-        function showNewBookingModal() {
-            const modal = document.getElementById('modalOverlay');
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-4">New Service Booking</h3>
-                        <form id="newBookingForm" class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
-                                    <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                    <input type="tel" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <input type="email" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
-                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                        <option value="">Select Service</option>
-                                        <option value="internet">Internet Installation</option>
-                                        <option value="cctv">CCTV Installation</option>
-                                        <option value="electrical">Electrical Services</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Service Details</label>
-                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                    <option value="">Select Package</option>
-                                    <option value="gamer">Gamer Pro - 1 Gbps</option>
-                                    <option value="home">Home Premium - 200 Mbps</option>
-                                    <option value="office">Office Business - 500 Mbps</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                                <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
-                                    <input type="date" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Estimated Amount (Ksh)</label>
-                                    <input type="number" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
-                                <textarea rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
-                        <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:text-gray-900">Cancel</button>
-                        <button onclick="saveNewBooking()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Save Booking</button>
-                    </div>
-                </div>
-            `;
-            modal.style.display = 'block';
-        }
-
-        function showNewClientModal() {
-            const modal = document.getElementById('modalOverlay');
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-4">New Internet Client</h3>
-                        <form id="newClientForm" class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                    <input type="text" id="clientName" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                    <input type="tel" id="clientPhone" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                    <input type="email" id="clientEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
-                                    <input type="text" id="clientId" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Physical Address</label>
-                                <textarea rows="2" id="clientAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" required></textarea>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Internet Plan</label>
-                                    <select id="clientPlan" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                        <option value="">Select Plan</option>
-                                        <option value="gamer">Gamer Pro - 1 Gbps (Ksh 5,000)</option>
-                                        <option value="home">Home Premium - 200 Mbps (Ksh 3,500)</option>
-                                        <option value="office">Office Business - 500 Mbps (Ksh 7,500)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Connection Date</label>
-                                    <input type="date" id="connectionDate" class="w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Router MAC Address</label>
-                                    <input type="text" id="routerMac" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="AA:BB:CC:DD:EE:FF">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
-                                    <input type="text" id="ipAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="192.168.1.1">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                                <textarea rows="2" id="clientNotes" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
-                        <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:text-gray-900">Cancel</button>
-                        <button onclick="saveNewClient()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Save Client</button>
-                    </div>
-                </div>
-            `;
-            modal.style.display = 'block';
-        }
-
-        function saveNewClient() {
-            // Generate unique client ID
-            const clientId = 'CL' + String(internetClients.length + 1).padStart(3, '0');
+        function checkAuth() {
+            const token = localStorage.getItem('kingsFiberToken');
+            const userId = localStorage.getItem('kingsFiberUserId');
             
-            const newClient = {
-                id: clientId,
-                name: document.getElementById('clientName').value,
-                phone: document.getElementById('clientPhone').value,
-                email: document.getElementById('clientEmail').value,
-                plan: document.getElementById('clientPlan').options[document.getElementById('clientPlan').selectedIndex].text,
-                location: document.getElementById('clientAddress').value,
-                connectionDate: document.getElementById('connectionDate').value,
-                renewalDate: calculateRenewalDate(document.getElementById('connectionDate').value),
-                status: 'active'
-            };
-
-            internetClients.push(newClient);
-            updateClientsTable();
-            updateStats();
-            
-            // Create initial invoice
-            const invoiceId = 'INV' + String(invoices.length + 1).padStart(3, '0');
-            const planPrice = getPlanPrice(newClient.plan);
-            
-            invoices.push({
-                id: invoiceId,
-                client: newClient.name,
-                amount: planPrice,
-                dueDate: newClient.renewalDate,
-                status: 'pending',
-                service: newClient.plan
-            });
-
-            addNotification(`New client ${newClient.name} added`, 'success');
-            closeModal();
-        }
-
-        function calculateRenewalDate(connectionDate) {
-            const date = new Date(connectionDate);
-            date.setMonth(date.getMonth() + 1);
-            return date.toISOString().split('T')[0];
-        }
-
-        function getPlanPrice(planText) {
-            if (planText.includes('5,000')) return 5000;
-            if (planText.includes('3,500')) return 3500;
-            if (planText.includes('7,500')) return 7500;
-            return 0;
-        }
-
-        function generateInvoices() {
-            const today = new Date();
-            const newInvoices = [];
-
-            internetClients.forEach(client => {
-                if (client.status === 'active') {
-                    const renewalDate = new Date(client.renewalDate);
-                    if (renewalDate <= today) {
-                        const invoiceId = 'INV' + String(invoices.length + newInvoices.length + 1).padStart(3, '0');
-                        const planPrice = getPlanPrice(client.plan);
-                        
-                        newInvoices.push({
-                            id: invoiceId,
-                            client: client.name,
-                            amount: planPrice,
-                            dueDate: new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0],
-                            status: 'pending',
-                            service: client.plan
-                        });
-
-                        // Update client renewal date
-                        client.renewalDate = new Date(today.setDate(today.getDate() + 30)).toISOString().split('T')[0];
-                    }
+            if (token && userId) {
+                const user = DB.users.find(u => u.id == userId);
+                if (user) {
+                    loginUser(user);
                 }
-            });
-
-            if (newInvoices.length > 0) {
-                invoices.push(...newInvoices);
-                updateInvoicesTable();
-                updateClientsTable();
-                addNotification(`Generated ${newInvoices.length} new invoices`, 'success');
-            } else {
-                addNotification('No invoices to generate this month', 'info');
             }
         }
 
-        function viewClient(clientId) {
-            const client = internetClients.find(c => c.id === clientId);
-            if (!client) return;
-
-            const modal = document.getElementById('modalOverlay');
-            modal.innerHTML = `
-                <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-4">Client Details - ${client.id}</h3>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">Name</p>
-                                    <p class="font-medium">${client.name}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Phone</p>
-                                    <p class="font-medium">${client.phone}</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">Email</p>
-                                    <p class="font-medium">${client.email || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Location</p>
-                                    <p class="font-medium">${client.location}</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">Plan</p>
-                                    <p class="font-medium">${client.plan}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Status</p>
-                                    <p class="font-medium">
-                                        <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(client.status)}">
-                                            ${client.status.charAt(0).toUpperCase() + client.status.slice(1)}
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">Connection Date</p>
-                                    <p class="font-medium">${client.connectionDate}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Renewal Date</p>
-                                    <p class="font-medium">${client.renewalDate}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
-                        <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:text-gray-900">Close</button>
-                    </div>
-                </div>
-            `;
-            modal.style.display = 'block';
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+            document.getElementById('signupModal').style.display = 'none';
         }
 
-        function markAsPaid(invoiceId) {
-            const invoice = invoices.find(i => i.id === invoiceId);
-            if (invoice) {
-                invoice.status = 'paid';
-                updateInvoicesTable();
-                updateStats();
-                addNotification(`Invoice ${invoiceId} marked as paid`, 'success');
-            }
+        function showSignup() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('signupModal').style.display = 'block';
         }
 
-        function loadCharts() {
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(revenueCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Revenue (Ksh)',
-                        data: [120000, 190000, 150000, 250000, 220000, 300000],
-                        borderColor: '#7c3aed',
-                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-            // Report Chart
-            const reportCtx = document.getElementById('reportChart').getContext('2d');
-            new Chart(reportCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Internet', 'CCTV', 'Electrical'],
-                    datasets: [{
-                        data: [65, 25, 10],
-                        backgroundColor: [
-                            '#7c3aed',
-                            '#ef4444',
-                            '#f59e0b'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
+        function closeModals() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('signupModal').style.display = 'none';
         }
 
-        function addNotification(message, type = 'info') {
-            const notification = {
-                id: Date.now(),
-                message,
-                type,
-                timestamp: new Date().toLocaleTimeString(),
-                read: false
-            };
-            notifications.unshift(notification);
-            checkNotifications();
-        }
+        // Login Form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
 
-        function checkNotifications() {
-            const panel = document.getElementById('notificationPanel').querySelector('.max-h-64');
-            panel.innerHTML = '';
+            const user = DB.users.find(u => u.email === email && u.password === password);
             
-            if (notifications.length === 0) {
-                panel.innerHTML = '<p class="text-gray-500 text-center p-4">No notifications</p>';
+            if (user) {
+                loginUser(user);
+                closeModals();
+            } else {
+                alert('Invalid email or password');
+            }
+        });
+
+        // Signup Form
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('signupEmail').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
                 return;
             }
 
-            notifications.slice(0, 5).forEach(notif => {
-                const div = document.createElement('div');
-                div.className = `p-3 border-b ${notif.read ? 'bg-white' : 'bg-blue-50'}`;
-                div.innerHTML = `
-                    <div class="flex items-start space-x-3">
-                        <div class="mt-1">
-                            <i class="fas fa-${notif.type === 'success' ? 'check-circle text-green-500' : 'info-circle text-blue-500'}"></i>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-sm">${notif.message}</p>
-                            <p class="text-xs text-gray-500">${notif.timestamp}</p>
-                        </div>
-                    </div>
-                `;
-                panel.appendChild(div);
-            });
-        }
+            if (DB.users.some(u => u.email === email)) {
+                alert('Email already registered');
+                return;
+            }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').style.display = 'none';
+            const newUser = {
+                id: DB.users.length + 1,
+                email,
+                password,
+                firstName,
+                lastName,
+                phone,
+                role: 'customer',
+                services: [],
+                invoices: [],
+                createdAt: new Date().toISOString()
+            };
+
+            DB.users.push(newUser);
+            localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
+            
+            loginUser(newUser);
+            closeModals();
+            alert('Account created successfully!');
+        });
+
+        function loginUser(user) {
+            currentUser = user;
+            
+            // Create token (in production, use JWT from backend)
+            const token = btoa(JSON.stringify({ userId: user.id, timestamp: Date.now() }));
+            localStorage.setItem('kingsFiberToken', token);
+            localStorage.setItem('kingsFiberUserId', user.id);
+            
+            // Show app, hide landing page
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('appContainer').classList.remove('hidden');
+            
+            // Update UI based on role
+            updateUserUI();
+            showDashboard();
         }
 
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                // Redirect to login page or show login form
-                alert('Logged out successfully');
-                // In a real app, you would redirect to login page
+                currentUser = null;
+                localStorage.removeItem('kingsFiberToken');
+                localStorage.removeItem('kingsFiberUserId');
+                
+                document.getElementById('appContainer').classList.add('hidden');
+                document.getElementById('landingPage').style.display = 'block';
+                
+                // Reset forms
+                document.getElementById('loginForm').reset();
             }
         }
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeDashboard);
+        function updateUserUI() {
+            if (!currentUser) return;
 
-        // Close modal when clicking outside
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+            // Update user info
+            document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            document.getElementById('userRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Customer';
+
+            // Show/hide admin navigation
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminNav').classList.remove('hidden');
+            } else {
+                document.getElementById('adminNav').classList.add('hidden');
             }
-        });
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            panel.classList.toggle('hidden');
+            loadNotifications();
+        }
+
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function loadNotifications() {
+            const list = document.getElementById('notificationList');
+            list.innerHTML = '';
+            
+            const notifications = [
+                { id: 1, text: 'Your internet bill is due in 3 days', type: 'warning', time: '2 hours ago' },
+                { id: 2, text: 'New service package available', type: 'info', time: '1 day ago' },
+                { id: 3, text: 'Service maintenance scheduled', type: 'info', time: '2 days ago' }
+            ];
+
+            notifications.forEach(notif => {
+                const div = document.createElement('div');
+                div.className = 'p-4 border-b hover:bg-gray-50 cursor-pointer';
+                div.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="flex-1">
+                            <p class="text-sm">${notif.text}</p>
+                            <p class="text-xs text-gray-500 mt-1">${notif.time}</p>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Navigation Functions
+        function showDashboard() {
+            hideAllSections();
+            document.getElementById('userDashboard').classList.remove('hidden');
+            loadDashboard();
+        }
+
+        function showAdminDashboard() {
+            hideAllSections();
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            loadAdminDashboard();
+        }
+
+        function showMyServices() {
+            hideAllSections();
+            loadUserServices();
+            document.getElementById('userDashboard').classList.remove('hidden');
+        }
+
+        function showBilling() {
+            hideAllSections();
+            loadUserBilling();
+            document.getElementById('userDashboard').classList.remove('hidden');
+        }
+
+        function showShop() {
+            hideAllSections();
+            document.getElementById('shopContent').classList.remove('hidden');
+            loadShop();
+        }
+
+        function showProfile() {
+            hideAllSections();
+            document.getElementById('profileContent').classList.remove('hidden');
+            loadProfile();
+        }
+
+        function showServiceManagement() {
+            hideAllSections();
+            document.getElementById('serviceManagement').classList.remove('hidden');
+            loadServiceManagement();
+        }
+
+        function hideAllSections() {
+            document.querySelectorAll('#userDashboard, #adminDashboard, #serviceManagement, #shopContent, #profileContent').forEach(el => {
+                el.classList.add('hidden');
+            });
+        }
+
+        // Dashboard Loading
+        function loadDashboard() {
+            const dashboard = document.getElementById('userDashboard');
+            
+            if (currentUser.role === 'admin') {
+                dashboard.innerHTML = `
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                        <p class="text-gray-600">Manage your business operations</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Total Users</p>
+                            <p class="text-3xl font-bold text-gray-900">${DB.users.length}</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Active Services</p>
+                            <p class="text-3xl font-bold text-green-600">${DB.services.length}</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Revenue Today</p>
+                            <p class="text-3xl font-bold text-purple-600">Ksh 0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Pending Bookings</p>
+                            <p class="text-3xl font-bold text-yellow-600">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="dashboard-card">
+                            <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
+                            <div class="space-y-3">
+                                <button onclick="showUserManagement()" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                    <i class="fas fa-users mr-2"></i>Manage Users
+                                </button>
+                                <button onclick="showServiceManagement()" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                    <i class="fas fa-cogs mr-2"></i>Manage Services
+                                </button>
+                                <button onclick="showBookingManagement()" class="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                    <i class="fas fa-calendar-check mr-2"></i>Manage Bookings
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <h3 class="text-lg font-bold mb-4">Recent Activity</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                    <div>
+                                        <p class="font-medium">New user registered</p>
+                                        <p class="text-sm text-gray-500">Just now</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Customer Dashboard
+                const activeServices = currentUser.services.filter(s => s.status === 'active').length;
+                const dueSoon = currentUser.invoices.filter(i => i.status === 'pending').length;
+                
+                dashboard.innerHTML = `
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900">Welcome back, ${currentUser.firstName}!</h1>
+                        <p class="text-gray-600">Here's your service overview</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Active Services</p>
+                            <p class="text-3xl font-bold text-gray-900">${activeServices}</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Due Soon</p>
+                            <p class="text-3xl font-bold text-yellow-600">${dueSoon}</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <p class="text-gray-500">Support Tickets</p>
+                            <p class="text-3xl font-bold text-blue-600">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="dashboard-card">
+                            <h3 class="text-lg font-bold mb-4">My Services</h3>
+                            ${currentUser.services.length > 0 ? `
+                                <div class="space-y-4">
+                                    ${currentUser.services.map(service => `
+                                        <div class="p-4 border rounded-lg">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h4 class="font-bold">${service.name}</h4>
+                                                <span class="status-badge status-${service.status}">${service.status}</span>
+                                            </div>
+                                            <p class="text-gray-600 text-sm mb-3">${service.description || ''}</p>
+                                            <div class="flex justify-between text-sm">
+                                                <span>Renews: ${service.renewalDate}</span>
+                                                <span class="font-bold">Ksh ${service.price}/month</span>
+                                            </div>
+                                            ${service.usage ? `
+                                                <div class="mt-3 pt-3 border-t">
+                                                    <p class="text-sm font-medium mb-1">Usage This Month:</p>
+                                                    <p class="text-sm text-gray-600">${service.usage.dataUsed} / ${service.usage.dataLimit}</p>
+                                                    <p class="text-sm text-gray-600">Speed: ${service.usage.speed}</p>
+                                                    <p class="text-sm text-gray-600">Uptime: ${service.usage.uptime}</p>
+                                                </div>
+                                            ` : ''}
+                                            <div class="mt-4 flex space-x-2">
+                                                <button onclick="renewService(${service.id})" class="flex-1 bg-purple-600 text-white py-2 rounded text-sm hover:bg-purple-700">
+                                                    Renew
+                                                </button>
+                                                <button onclick="upgradeService(${service.id})" class="flex-1 border border-purple-600 text-purple-600 py-2 rounded text-sm hover:bg-purple-50">
+                                                    Upgrade
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="text-center py-8">
+                                    <i class="fas fa-wifi text-4xl text-gray-300 mb-4"></i>
+                                    <p class="text-gray-500 mb-4">No active services yet</p>
+                                    <button onclick="bookService()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
+                                        Get Started
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <h3 class="text-lg font-bold mb-4">Recent Invoices</h3>
+                            ${currentUser.invoices.length > 0 ? `
+                                <div class="space-y-3">
+                                    ${currentUser.invoices.map(invoice => `
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                            <div>
+                                                <p class="font-medium">${invoice.service}</p>
+                                                <p class="text-sm text-gray-500">Due: ${invoice.dueDate}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-bold">Ksh ${invoice.amount}</p>
+                                                <span class="text-xs ${invoice.status === 'paid' ? 'text-green-600' : 'text-red-600'}">
+                                                    ${invoice.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : `
+                                <div class="text-center py-8">
+                                    <i class="fas fa-file-invoice text-4xl text-gray-300 mb-4"></i>
+                                    <p class="text-gray-500">No invoices yet</p>
+                                </div>
+                            `}
+                            
+                            <div class="mt-6">
+                                <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="bookService()" class="p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                                        <i class="fas fa-plus-circle mb-2"></i>
+                                        <p class="text-sm font-medium">New Service</p>
+                                    </button>
+                                    <button onclick="renewService()" class="p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                                        <i class="fas fa-sync-alt mb-2"></i>
+                                        <p class="text-sm font-medium">Renew Service</p>
+                                    </button>
+                                    <button onclick="reportIssue()" class="p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                                        <i class="fas fa-exclamation-triangle mb-2"></i>
+                                        <p class="text-sm font-medium">Report Issue</p>
+                                    </button>
+                                    <button onclick="showSupport()" class="p-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100">
+                                        <i class="fas fa-headset mb-2"></i>
+                                        <p class="text-sm font-medium">Get Support</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function loadServiceManagement() {
+            const container = document.getElementById('serviceManagement');
+            
+            container.innerHTML = `
+                <div class="mb-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">Service Management</h1>
+                            <p class="text-gray-600">Manage all service packages</p>
+                        </div>
+                        <button onclick="showAddServiceModal()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-plus mr-2"></i>Add Service
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Services loaded by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            loadServicesTable();
+        }
+
+        function loadServicesTable() {
+            const table = document.getElementById('servicesTable');
+            table.innerHTML = '';
+            
+            DB.services.forEach(service => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${service.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <img src="${service.image}" class="w-10 h-10 rounded-lg object-cover mr-3">
+                            <div>
+                                <div class="font-medium">${service.name}</div>
+                                <div class="text-sm text-gray-500">${service.description}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                            ${service.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap font-bold">Ksh ${service.price}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                            Active
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex space-x-2">
+                            <button onclick="editService(${service.id})" class="text-blue-600 hover:text-blue-900">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteService(${service.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function showAddServiceModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Add New Service</h3>
+                                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <form id="addServiceForm" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
+                                        <input type="text" id="serviceName" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                        <select id="serviceCategory" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                            <option value="internet">Internet</option>
+                                            <option value="cctv">CCTV</option>
+                                            <option value="electrical">Electrical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea id="serviceDescription" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (Ksh)</label>
+                                        <input type="number" id="servicePrice" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                        <input type="url" id="serviceImage" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Features (comma separated)</label>
+                                    <input type="text" id="serviceFeatures" placeholder="Feature 1, Feature 2, Feature 3" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                            </form>
+                            
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <button onclick="this.closest('.modal-overlay').remove()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button onclick="saveService()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                                    Save Service
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function saveService() {
+            const name = document.getElementById('serviceName').value;
+            const category = document.getElementById('serviceCategory').value;
+            const description = document.getElementById('serviceDescription').value;
+            const price = parseInt(document.getElementById('servicePrice').value);
+            const image = document.getElementById('serviceImage').value || 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80';
+            const features = document.getElementById('serviceFeatures').value.split(',').map(f => f.trim());
+            
+            const newService = {
+                id: DB.services.length + 1,
+                name,
+                category,
+                description,
+                price,
+                image,
+                features,
+                speed: category === 'internet' ? '200 Mbps' : null
+            };
+            
+            DB.services.push(newService);
+            localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
+            
+            // Close modal and refresh
+            document.querySelector('.modal-overlay').remove();
+            loadServicesTable();
+            alert('Service added successfully!');
+        }
+
+        function editService(serviceId) {
+            const service = DB.services.find(s => s.id === serviceId);
+            if (!service) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Edit Service</h3>
+                                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <form id="editServiceForm" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
+                                        <input type="text" id="editServiceName" value="${service.name}" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                        <select id="editServiceCategory" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                            <option value="internet" ${service.category === 'internet' ? 'selected' : ''}>Internet</option>
+                                            <option value="cctv" ${service.category === 'cctv' ? 'selected' : ''}>CCTV</option>
+                                            <option value="electrical" ${service.category === 'electrical' ? 'selected' : ''}>Electrical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea id="editServiceDescription" rows="2" class="w-full border border-gray-300 rounded-lg px-4 py-2">${service.description || ''}</textarea>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (Ksh)</label>
+                                        <input type="number" id="editServicePrice" value="${service.price}" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                        <input type="url" id="editServiceImage" value="${service.image}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Features (comma separated)</label>
+                                    <input type="text" id="editServiceFeatures" value="${service.features ? service.features.join(', ') : ''}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                            </form>
+                            
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <button onclick="this.closest('.modal-overlay').remove()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button onclick="updateService(${serviceId})" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                                    Update Service
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function updateService(serviceId) {
+            const service = DB.services.find(s => s.id === serviceId);
+            if (!service) return;
+
+            service.name = document.getElementById('editServiceName').value;
+            service.category = document.getElementById('editServiceCategory').value;
+            service.description = document.getElementById('editServiceDescription').value;
+            service.price = parseInt(document.getElementById('editServicePrice').value);
+            service.image = document.getElementById('editServiceImage').value;
+            service.features = document.getElementById('editServiceFeatures').value.split(',').map(f => f.trim());
+            
+            localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
+            
+            document.querySelector('.modal-overlay').remove();
+            loadServicesTable();
+            alert('Service updated successfully!');
+        }
+
+        function deleteService(serviceId) {
+            if (confirm('Are you sure you want to delete this service?')) {
+                const index = DB.services.findIndex(s => s.id === serviceId);
+                if (index !== -1) {
+                    DB.services.splice(index, 1);
+                    localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
+                    loadServicesTable();
+                    alert('Service deleted successfully!');
+                }
+            }
+        }
+
+        function loadShop() {
+            const container = document.getElementById('shopContent');
+            
+            container.innerHTML = `
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Equipment Shop</h1>
+                    <p class="text-gray-600">Premium equipment for all your installation needs</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productsGrid">
+                    <!-- Products loaded by JavaScript -->
+                </div>
+            `;
+            
+            loadProductsGrid();
+        }
+
+        function loadProductsGrid() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            DB.products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'bg-white rounded-xl shadow overflow-hidden card-hover';
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3">${product.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-purple-600">Ksh ${product.price.toLocaleString()}</span>
+                            <button onclick="addToCart(${product.id})" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700">
+                                <i class="fas fa-cart-plus mr-1"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = DB.products.find(p => p.id === productId);
+            if (!product) return;
+
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                quantity: 1
+            });
+            
+            localStorage.setItem('kingsFiberCart', JSON.stringify(cart));
+            alert('Product added to cart!');
+        }
+
+        function bookService() {
+            if (!currentUser) {
+                showLogin();
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Book a Service</h3>
+                                <button onclick="this.closest('.modal-overlay').remove()" class="text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                ${DB.services.map(service => `
+                                    <div class="border rounded-lg p-4 hover:border-purple-500 cursor-pointer" onclick="selectService(${service.id})">
+                                        <img src="${service.image}" alt="${service.name}" class="w-full h-32 object-cover rounded mb-3">
+                                        <h4 class="font-bold">${service.name}</h4>
+                                        <p class="text-gray-600 text-sm mb-2">${service.description}</p>
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-purple-600">Ksh ${service.price}/month</span>
+                                            <button class="text-purple-600 hover:text-purple-700">
+                                                Select <i class="fas fa-arrow-right ml-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function selectService(serviceId) {
+            const service = DB.services.find(s => s.id === serviceId);
+            if (!service) return;
+
+            if (confirm(`Book ${service.name} for Ksh ${service.price}/month?`)) {
+                // Add service to user
+                const userService = {
+                    id: currentUser.services.length + 1,
+                    type: service.category,
+                    name: service.name,
+                    price: service.price,
+                    status: 'active',
+                    startDate: new Date().toISOString().split('T')[0],
+                    renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                };
+                
+                currentUser.services.push(userService);
+                
+                // Update user in DB
+                const userIndex = DB.users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    DB.users[userIndex] = currentUser;
+                    localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
+                }
+                
+                alert('Service booked successfully!');
+                document.querySelector('.modal-overlay').remove();
+                showDashboard();
+            }
+        }
+
+        function renewService(serviceId) {
+            if (!currentUser) return;
+            
+            const service = currentUser.services.find(s => s.id === serviceId);
+            if (!service) return;
+            
+            if (confirm(`Renew ${service.name} for Ksh ${service.price}?`)) {
+                // Update renewal date
+                service.renewalDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                
+                // Update user in DB
+                const userIndex = DB.users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    DB.users[userIndex] = currentUser;
+                    localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
+                }
+                
+                alert('Service renewed successfully!');
+                showDashboard();
+            }
+        }
+
+        function scrollToServices() {
+            document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadLandingPage() {
+            // Already loaded in HTML
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.remove();
+            }
+        };
+
+        // Export DB for backend compatibility
+        window.getDatabase = function() {
+            return JSON.parse(JSON.stringify(DB));
+        };
+
+        window.updateDatabase = function(newDB) {
+            DB = newDB;
+            localStorage.setItem('kingsFiberUsers', JSON.stringify(DB.users));
+            localStorage.setItem('kingsFiberServices', JSON.stringify(DB.services));
+            localStorage.setItem('kingsFiberProducts', JSON.stringify(DB.products));
+        };
     </script>
 </body>
 </html>
